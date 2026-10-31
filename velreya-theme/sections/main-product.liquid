@@ -1,0 +1,156 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign tint = product.metafields.velreya.atmosphere.value | default: settings.color_bronze
+  assign tint2 = product.metafields.velreya.atmosphere_secondary.value | default: settings.color_charcoal
+-%}
+<section class="pdp section--dark" style="--tint: {{ tint }}; --tint-2: {{ tint2 }};">
+  <div class="pdp__atmos" aria-hidden="true"></div>
+  <div class="container container--wide pdp__grid">
+    <div class="pdp__gallery" aria-label="{{ 'products.gallery' | t }}">
+      {%- if product.media.size > 0 -%}
+        <ul class="pdp__media-list" role="list" data-gallery>
+          {%- for media in product.media -%}
+            <li class="pdp__media pdp__media--{{ media.media_type }}" data-media-id="{{ media.id }}">
+              {%- case media.media_type -%}
+                {%- when 'image' -%}
+                  {%- if forloop.first -%}{%- assign l = 'eager' -%}{%- else -%}{%- assign l = 'lazy' -%}{%- endif -%}
+                  {%- assign media_alt = media.alt | default: product.title -%}
+                  {% render 'image', image: media, sizes: '(min-width: 990px) 55vw, 100vw', loading: l, alt: media_alt %}
+                {%- when 'video' -%}
+                  {{ media | video_tag: controls: true, muted: true, playsinline: true, preload: 'none', image_size: '1600x' }}
+                {%- when 'external_video' -%}
+                  {{ media | external_video_tag: loading: 'lazy' }}
+                {%- when 'model' -%}
+                  {{ media | model_viewer_tag: reveal: 'interaction', toggleable: true }}
+              {%- endcase -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+        {%- if product.media.size > 1 -%}
+          <ol class="pdp__dots" role="list" aria-hidden="true">
+            {%- for media in product.media -%}<li></li>{%- endfor -%}
+          </ol>
+        {%- endif -%}
+      {%- else -%}
+        <div class="pdp__media pdp__media--placeholder">{% render 'bottle-placeholder', tint: tint, label: product.title %}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="pdp__info">
+      <div class="pdp__sticky">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'title' -%}
+              <nav class="breadcrumb" aria-label="{{ 'general.breadcrumb' | t }}" {{ block.shopify_attributes }}>
+                <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a><span aria-hidden="true">/</span>
+                {%- if collection -%}<a href="{{ collection.url }}">{{ collection.title }}</a>{%- else -%}<a href="{{ routes.all_products_collection_url }}">{{ 'collections.all' | t }}</a>{%- endif -%}
+              </nav>
+              <h1 class="pdp__title display">{{ product.title }}</h1>
+              {%- assign character = product.metafields.velreya.character.value -%}
+              {%- if character != blank -%}<p class="pdp__character">{{ character }}</p>{%- endif -%}
+
+            {%- when 'price' -%}
+              <div class="pdp__price" data-pdp-price {{ block.shopify_attributes }}>
+                {% render 'price', product: product, variant: current_variant %}
+              </div>
+
+            {%- when 'buy' -%}
+              <product-form class="pdp__form" data-product-form {{ block.shopify_attributes }}>
+                {%- form 'product', product, id: 'ProductForm-main', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+                  <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-input>
+                  {%- unless product.has_only_default_variant -%}
+                    {%- for option in product.options_with_values -%}
+                      <fieldset class="options" data-option-index="{{ forloop.index0 }}">
+                        <legend class="options__legend">{{ option.name }}</legend>
+                        <div class="options__values">
+                          {%- for value in option.values -%}
+                            <input type="radio" class="visually-hidden" id="Opt-{{ forloop.parentloop.index }}-{{ forloop.index }}" name="option-{{ forloop.parentloop.index0 }}" value="{{ value | escape }}" {% if option.selected_value == value %}checked{% endif %} data-option-input>
+                            <label class="pill" for="Opt-{{ forloop.parentloop.index }}-{{ forloop.index }}">{{ value }}</label>
+                          {%- endfor -%}
+                        </div>
+                      </fieldset>
+                    {%- endfor -%}
+                  {%- endunless -%}
+                  <div class="pdp__actions">
+                    <div class="qty" data-qty>
+                      <button type="button" class="qty__btn" data-qty-change="-1" aria-label="{{ 'cart.decrease_generic' | t }}">{% render 'icon', name: 'minus', size: 14 %}</button>
+                      <input class="qty__input" type="number" name="quantity" value="1" min="1" inputmode="numeric" aria-label="{{ 'cart.quantity' | t }}">
+                      <button type="button" class="qty__btn" data-qty-change="1" aria-label="{{ 'cart.increase_generic' | t }}">{% render 'icon', name: 'plus', size: 14 %}</button>
+                    </div>
+                    <button type="submit" name="add" class="btn btn--ivory btn--grow" data-add-button {% unless current_variant.available %}disabled{% endunless %}>
+                      <span data-add-label>{%- if current_variant.available -%}{{ 'products.add_to_bag' | t }}{%- else -%}{{ 'products.sold_out' | t }}{%- endif -%}</span>
+                    </button>
+                  </div>
+                  <p class="form-error" role="alert" data-form-error hidden></p>
+                  {%- if block.settings.show_dynamic_checkout -%}{{ form | payment_button }}{%- endif -%}
+                {%- endform -%}
+                <script type="application/json" data-variants>
+                  [{%- for v in product.variants -%}{"id":{{ v.id }},"options":{{ v.options | json }},"available":{{ v.available }},"price":{{ v.price | money | json }},"compare":{% if v.compare_at_price > v.price %}{{ v.compare_at_price | money | json }}{% else %}null{% endif %},"mediaId":{{ v.featured_media.id | default: 'null' }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]
+                </script>
+              </product-form>
+
+            {%- when 'notes' -%}
+              <div class="pdp__notes" {{ block.shopify_attributes }}>
+                <h2 class="pdp__subhead">{{ 'fragrance.pyramid' | t }}</h2>
+                {% render 'fragrance-notes', product: product, style: 'stacked' %}
+              </div>
+
+            {%- when 'description' -%}
+              {%- if product.description != blank -%}
+                <div class="pdp__desc rte" {{ block.shopify_attributes }}>{{ product.description }}</div>
+              {%- endif -%}
+
+            {%- when 'discovery' -%}
+              {%- if settings.discovery_product != blank and settings.discovery_product.id != product.id -%}
+                <div class="pdp__discovery" {{ block.shopify_attributes }}>
+                  <p>{{ block.settings.text }}</p>
+                  <button type="button" class="link-arrow" data-discovery-open>{{ 'discovery.cta' | t }}{% render 'icon', name: 'arrow-right', size: 16 %}</button>
+                </div>
+              {%- endif -%}
+
+            {%- when 'collapsible' -%}
+              <details class="accordion" {{ block.shopify_attributes }}>
+                <summary>{{ block.settings.heading }}{% render 'icon', name: 'plus', size: 14 %}</summary>
+                <div class="accordion__body rte">
+                  {{ block.settings.content }}
+                  {%- if block.settings.page != blank -%}{{ block.settings.page.content }}{%- endif -%}
+                  {%- case block.settings.policy -%}
+                    {%- when 'shipping' -%}{%- if shop.shipping_policy -%}<p><a href="{{ shop.shipping_policy.url }}">{{ shop.shipping_policy.title }}</a></p>{%- endif -%}
+                    {%- when 'refund' -%}{%- if shop.refund_policy -%}<p><a href="{{ shop.refund_policy.url }}">{{ shop.refund_policy.title }}</a></p>{%- endif -%}
+                  {%- endcase -%}
+                </div>
+              </details>
+
+            {%- when 'explore' -%}
+              {%- if block.settings.link != blank -%}
+                <a class="link-arrow pdp__explore" href="{{ block.settings.link }}#{{ product.handle }}" {{ block.shopify_attributes }}>{{ 'products.explore_story' | t }}{% render 'icon', name: 'arrow-right', size: 16 %}</a>
+              {%- endif -%}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="application/ld+json">{{ product | structured_data }}</script>
+
+{% schema %}
+{
+  "name": "Product",
+  "blocks": [
+    { "type": "title", "name": "Title", "limit": 1 },
+    { "type": "price", "name": "Price", "limit": 1 },
+    { "type": "buy", "name": "Buy buttons", "limit": 1, "settings": [ { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show dynamic checkout buttons", "default": false } ] },
+    { "type": "notes", "name": "Fragrance notes", "limit": 1 },
+    { "type": "description", "name": "Description", "limit": 1 },
+    { "type": "discovery", "name": "Discovery set prompt", "limit": 1, "settings": [ { "type": "text", "id": "text", "label": "Text", "default": "Not ready to choose? Try it in miniature in your own discovery set." } ] },
+    { "type": "collapsible", "name": "Collapsible row", "settings": [
+      { "type": "text", "id": "heading", "label": "Heading", "default": "Shipping & returns" },
+      { "type": "richtext", "id": "content", "label": "Content" },
+      { "type": "page", "id": "page", "label": "Content from page" },
+      { "type": "select", "id": "policy", "label": "Link a policy", "options": [ { "value": "none", "label": "None" }, { "value": "shipping", "label": "Shipping" }, { "value": "refund", "label": "Refund" } ], "default": "none" }
+    ] },
+    { "type": "explore", "name": "Explore link", "limit": 1, "settings": [ { "type": "url", "id": "link", "label": "Explore page", "info": "For example /pages/explore" } ] }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,60 @@
+{
+  "sections": {
+    "hero": {
+      "type": "page-hero",
+      "settings": {
+        "eyebrow": "Our story",
+        "title": "The art of being unforgettable",
+        "text": "Some impressions never fade."
+      }
+    },
+    "intro": {
+      "type": "rich-text",
+      "settings": {
+        "scheme": "dark",
+        "eyebrow": "The house",
+        "title": "A fragrance is a signature",
+        "text": "<p>VELREYA is a modern fragrance house devoted to presence \u2014 the quiet confidence of being entirely yourself. Replace this text with your own story in the theme editor.</p>"
+      }
+    },
+    "ch1": {
+      "type": "story-chapter",
+      "settings": {
+        "scheme": "ivory",
+        "layout": "image-left",
+        "number": "I",
+        "eyebrow": "Identity",
+        "title": "Made to be personal",
+        "text": "<p>Tell customers what VELREYA means to you, in your own words.</p>"
+      }
+    },
+    "ch2": {
+      "type": "story-chapter",
+      "settings": {
+        "scheme": "charcoal",
+        "layout": "image-right",
+        "number": "II",
+        "eyebrow": "Emotion",
+        "title": "Composed for a feeling",
+        "text": "<p>Describe how your fragrances are chosen and what they are meant to evoke.</p>",
+        "cta": "Explore the fragrances",
+        "link": "/collections/all"
+      }
+    },
+    "world": {
+      "type": "world-of-velreya",
+      "settings": {
+        "scheme": "dark",
+        "cta": "Enter the experience",
+        "link": "/pages/explore"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "intro",
+    "ch1",
+    "ch2",
+    "world"
+  ]
+}

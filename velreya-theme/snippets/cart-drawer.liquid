@@ -1,0 +1,12 @@
+<cart-drawer class="drawer" id="CartDrawer" hidden>
+  <div class="drawer__overlay" data-drawer-close></div>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="CartDrawerTitle" tabindex="-1">
+    <header class="drawer__head">
+      <h2 class="drawer__title" id="CartDrawerTitle">{{ 'cart.title' | t }} <span data-cart-count-label>({{ cart.item_count }})</span></h2>
+      <button type="button" class="icon-btn" data-drawer-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
+    </header>
+    <div class="drawer__body" data-cart-drawer-body>
+      {% render 'cart-contents', context: 'drawer' %}
+    </div>
+  </div>
+</cart-drawer>

@@ -1,0 +1,32 @@
+{%- liquid
+  assign story = product.metafields.velreya.story.value
+  assign tint = product.metafields.velreya.atmosphere.value | default: settings.color_bronze
+-%}
+{%- if story != blank or section.settings.image != blank -%}
+<section class="pstory section--ivory" style="--tint: {{ tint }};">
+  <div class="container container--wide pstory__grid">
+    <div class="pstory__copy" data-reveal>
+      <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      <h2 class="display pstory__title">{{ product.title }}</h2>
+      {%- if story != blank -%}<div class="pstory__text">{{ story | newline_to_br }}</div>{%- endif -%}
+    </div>
+    <figure class="pstory__media" data-reveal>
+      {%- if section.settings.image != blank -%}
+        {% render 'image', image: section.settings.image, sizes: '(min-width: 990px) 45vw, 100vw' %}
+      {%- elsif product.media[1] -%}
+        {% render 'image', image: product.media[1].preview_image, sizes: '(min-width: 990px) 45vw, 100vw' %}
+      {%- endif -%}
+    </figure>
+  </div>
+</section>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Fragrance story",
+  "settings": [
+    { "type": "paragraph", "content": "Text comes from the product metafield velreya.story." },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The story" },
+    { "type": "image_picker", "id": "image", "label": "Image override" }
+  ]
+}
+{% endschema %}

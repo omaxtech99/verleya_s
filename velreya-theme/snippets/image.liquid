@@ -1,0 +1,14 @@
+{%- comment -%}
+  Responsive image. Params: image, sizes, class, loading ('lazy'|'eager'), alt, widths
+{%- endcomment -%}
+{%- liquid
+  assign w = widths | default: '360, 540, 720, 900, 1100, 1400, 1800, 2200'
+  assign l = loading | default: 'lazy'
+  assign a = alt | default: image.alt | escape
+  if l == 'eager'
+    assign fp = 'high'
+  else
+    assign fp = 'auto'
+  endif
+-%}
+{{ image | image_url: width: 2400 | image_tag: widths: w, sizes: sizes, class: class, loading: l, alt: a, fetchpriority: fp }}

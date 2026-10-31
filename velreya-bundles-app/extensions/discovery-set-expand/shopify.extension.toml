@@ -1,0 +1,16 @@
+api_version = "2025-07"
+
+[[extensions]]
+name = "Velreya discovery set"
+handle = "discovery-set-expand"
+type = "function"
+description = "Expands a VELREYA discovery set into the exact 12ml fragrances the customer chose."
+
+  [[extensions.targeting]]
+  target = "cart.transform.run"
+  input_query = "src/cart_transform_run.graphql"
+  export = "cart-transform-run"
+
+  [extensions.build]
+  command = ""
+  path = "dist/function.wasm"

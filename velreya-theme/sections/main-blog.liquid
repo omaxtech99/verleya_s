@@ -1,0 +1,22 @@
+{%- paginate blog.articles by 9 -%}
+<section class="journal section--ivory">
+  <div class="container container--wide">
+    <h1 class="display journal__title">{{ blog.title }}</h1>
+    <ul class="grid grid--3" role="list">
+      {%- for article in blog.articles -%}
+        <li>
+          <a class="acard" href="{{ article.url }}">
+            <span class="acard__media">{%- if article.image -%}{{ article.image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '450, 900', sizes: '(min-width: 990px) 30vw, 90vw', alt: article.image.alt | escape }}{%- endif -%}</span>
+            <span class="eyebrow">{{ article.published_at | time_tag: format: 'date' }}</span>
+            <span class="acard__title">{{ article.title }}</span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+    {% render 'pagination', paginate: paginate %}
+  </div>
+</section>
+{%- endpaginate -%}
+{% schema %}
+{ "name": "Blog", "settings": [] }
+{% endschema %}

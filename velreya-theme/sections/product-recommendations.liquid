@@ -1,0 +1,18 @@
+<product-recommendations class="recs section--ivory" data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=4&intent=related">
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <div class="container container--wide">
+      <h2 class="recs__title display">{{ section.settings.heading }}</h2>
+      <ul class="grid grid--4" role="list">
+        {%- for rec in recommendations.products -%}
+          <li>{% render 'product-card', product: rec, sizes: '(min-width: 990px) 22vw, 45vw' %}</li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endif -%}
+</product-recommendations>
+{% schema %}
+{
+  "name": "Related fragrances",
+  "settings": [ { "type": "text", "id": "heading", "label": "Heading", "default": "You may also love" } ]
+}
+{% endschema %}

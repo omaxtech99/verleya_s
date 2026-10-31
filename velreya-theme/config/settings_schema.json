@@ -1,0 +1,81 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Velreya",
+    "theme_version": "1.0.0",
+    "theme_author": "Velreya",
+    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
+    "theme_support_url": "https://help.shopify.com/"
+  },
+  {
+    "name": "Brand",
+    "settings": [
+      { "type": "image_picker", "id": "logo", "label": "Logo (light, for dark backgrounds)" },
+      { "type": "image_picker", "id": "logo_dark", "label": "Logo (dark, for light backgrounds)" },
+      { "type": "range", "id": "logo_width", "label": "Logo width", "min": 60, "max": 260, "step": 5, "unit": "px", "default": 130 },
+      { "type": "image_picker", "id": "favicon", "label": "Favicon", "info": "32 x 32px .png recommended" },
+      { "type": "text", "id": "brand_tagline", "label": "Brand line", "default": "The art of being unforgettable" }
+    ]
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      { "type": "color", "id": "color_black", "label": "Primary black", "default": "#090909" },
+      { "type": "color", "id": "color_charcoal", "label": "Charcoal", "default": "#171717" },
+      { "type": "color", "id": "color_ivory", "label": "Warm ivory", "default": "#F1EBE1" },
+      { "type": "color", "id": "color_gold", "label": "Champagne gold (accent)", "default": "#C5A875" },
+      { "type": "color", "id": "color_bronze", "label": "Muted bronze", "default": "#8D7458" },
+      { "type": "color", "id": "color_neutral", "label": "Soft neutral", "default": "#B7ACA0" }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      { "type": "font_picker", "id": "font_heading", "label": "Editorial serif (headings)", "default": "cormorant_n5" },
+      { "type": "font_picker", "id": "font_body", "label": "Sans-serif (interface and body)", "default": "jost_n4" },
+      { "type": "range", "id": "heading_scale", "label": "Heading scale", "min": 80, "max": 130, "step": 5, "unit": "%", "default": 100 }
+    ]
+  },
+  {
+    "name": "Motion",
+    "settings": [
+      { "type": "checkbox", "id": "enable_reveal", "label": "Cinematic reveal on scroll", "default": true, "info": "Automatically disabled for visitors who prefer reduced motion." }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      { "type": "select", "id": "cart_type", "label": "Cart type", "options": [ { "value": "drawer", "label": "Drawer" }, { "value": "page", "label": "Page" } ], "default": "drawer" },
+      { "type": "checkbox", "id": "cart_show_note", "label": "Enable order note", "default": true },
+      { "type": "inline_richtext", "id": "cart_reassurance", "label": "Cart reassurance line", "default": "Taxes and shipping calculated at checkout." }
+    ]
+  },
+  {
+    "name": "Discovery set",
+    "settings": [
+      { "type": "paragraph", "content": "Configure the 4 × 12ml discovery set. Full product and bundle setup: shopify/README.md in the project repository." },
+      { "type": "product", "id": "discovery_product", "label": "Discovery set product", "info": "The product whose variant price is the bundle price." },
+      { "type": "collection", "id": "discovery_collection", "label": "Fragrances available in the set", "info": "Usually your collection of the twelve fragrances." },
+      { "type": "text", "id": "mini_option_value", "label": "Miniature size option value", "default": "12ml", "info": "Each fragrance must have a variant with this option value (for example Size: 12ml)." },
+      { "type": "range", "id": "discovery_count", "label": "Fragrances per set", "min": 2, "max": 6, "step": 1, "default": 4 },
+      { "type": "page", "id": "discovery_page", "label": "Discovery set page (fallback link)" }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      { "type": "text", "id": "social_instagram", "label": "Instagram URL" },
+      { "type": "text", "id": "social_facebook", "label": "Facebook URL" },
+      { "type": "text", "id": "social_youtube", "label": "YouTube URL" },
+      { "type": "text", "id": "social_pinterest", "label": "Pinterest URL" },
+      { "type": "text", "id": "social_x", "label": "X URL" },
+      { "type": "text", "id": "social_whatsapp", "label": "WhatsApp URL", "info": "For example https://wa.me/91XXXXXXXXXX" }
+    ]
+  },
+  {
+    "name": "Search",
+    "settings": [
+      { "type": "checkbox", "id": "predictive_search", "label": "Enable predictive search", "default": true }
+    ]
+  }
+]

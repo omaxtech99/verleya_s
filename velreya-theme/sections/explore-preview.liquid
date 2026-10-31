@@ -1,0 +1,39 @@
+{%- assign s = section.settings -%}
+<section class="explore-teaser section--dark" aria-labelledby="ExploreTeaser-{{ section.id }}">
+  <div class="explore-teaser__media" aria-hidden="true">
+    {%- if s.image != blank -%}
+      {% render 'image', image: s.image, sizes: '100vw', class: 'explore-teaser__img' %}
+    {%- endif -%}
+    {%- if s.video != blank -%}
+      <video class="explore-teaser__video" muted playsinline loop preload="none" data-lazy-video {% if s.image != blank %}poster="{{ s.image | image_url: width: 1600 }}"{% endif %}>
+        {%- for source in s.video.sources -%}{%- if source.mime_type == 'video/mp4' -%}<source data-src="{{ source.url }}" type="video/mp4">{%- endif -%}{%- endfor -%}
+      </video>
+    {%- endif -%}
+  </div>
+  <div class="explore-teaser__veil" aria-hidden="true"></div>
+  <div class="container container--wide explore-teaser__content" data-reveal>
+    <p class="eyebrow eyebrow--gold">{{ s.eyebrow }}</p>
+    <h2 class="display explore-teaser__title" id="ExploreTeaser-{{ section.id }}">{{ s.title }}</h2>
+    {%- if s.text != blank -%}<p class="explore-teaser__text">{{ s.text }}</p>{%- endif -%}
+    {%- if s.link != blank -%}
+      <a class="btn btn--ivory" href="{{ s.link }}">{{ s.cta }}</a>
+    {%- elsif request.design_mode -%}
+      <p class="editor-hint">{{ 'onboarding.explore_link' | t }}</p>
+    {%- endif -%}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Explore teaser",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Poster image" },
+    { "type": "video", "id": "video", "label": "Short ambient loop (optional)", "info": "A single short clip. Loads only when visible." },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The Explore experience" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Every fragrance has a story." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Step inside each VELREYA creation — its mood, its notes, its world." },
+    { "type": "text", "id": "cta", "label": "Button", "default": "Enter the experience" },
+    { "type": "url", "id": "link", "label": "Link", "info": "Your Explore page, for example /pages/explore" }
+  ],
+  "presets": [ { "name": "Explore teaser" } ]
+}
+{% endschema %}

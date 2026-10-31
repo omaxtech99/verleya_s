@@ -1,0 +1,12 @@
+# Velreya Bundles — custom app hosting the discovery set Cart Transform function.
+# Run `shopify app config link` to connect this folder to your app; it will fill in client_id.
+name = "Velreya Bundles"
+client_id = ""
+application_url = "https://shopify.dev/apps/default-app-home"
+embedded = false
+
+[access_scopes]
+scopes = "write_cart_transforms,read_products"
+
+[build]
+include_config_on_deploy = true

@@ -1,0 +1,23 @@
+<section class="plp section--ivory">
+  <header class="plp__hero plp__hero--compact section--dark">
+    <div class="container container--wide plp__hero-copy"><h1 class="display plp__title">{{ section.settings.title }}</h1></div>
+  </header>
+  <div class="container container--wide">
+    <ul class="grid grid--3 plp__grid" role="list">
+      {%- for c in collections -%}
+        {%- if c.products_count > 0 -%}
+          <li>
+            <a class="ccard" href="{{ c.url }}">
+              <span class="ccard__media">{%- if c.featured_image -%}{{ c.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '450, 900', sizes: '(min-width: 990px) 30vw, 90vw', alt: '' }}{%- endif -%}</span>
+              <span class="ccard__title">{{ c.title }}</span>
+              <span class="ccard__count">{{ 'collections.fragrance_count' | t: count: c.products_count }}</span>
+            </a>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+{% schema %}
+{ "name": "Collections list", "settings": [ { "type": "text", "id": "title", "label": "Heading", "default": "Collections" } ] }
+{% endschema %}

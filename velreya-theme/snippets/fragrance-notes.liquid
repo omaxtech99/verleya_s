@@ -1,0 +1,40 @@
+{%- comment -%}
+  Top / heart / base notes from product metafields (velreya.top_notes, velreya.heart_notes, velreya.base_notes).
+  Accepts list.single_line_text_field or comma-separated single line text.
+  Params: product, style ('stacked' | 'inline' | 'columns')
+{%- endcomment -%}
+{%- liquid
+  assign tiers = 'top,heart,base' | split: ','
+  assign has_any = false
+  for t in tiers
+    assign key = t | append: '_notes'
+    if product.metafields.velreya[key] != blank
+      assign has_any = true
+    endif
+  endfor
+-%}
+{%- if has_any -%}
+  <dl class="notes notes--{{ style | default: 'stacked' }}">
+    {%- for t in tiers -%}
+      {%- assign key = t | append: '_notes' -%}
+      {%- assign mf = product.metafields.velreya[key] -%}
+      {%- if mf != blank -%}
+        {%- if mf.type contains 'list' -%}
+          {%- assign list = mf.value -%}
+        {%- else -%}
+          {%- assign list = mf.value | split: ',' -%}
+        {%- endif -%}
+        <div class="notes__tier">
+          {%- assign icon_name = 'note-' | append: t -%}
+          {%- assign label_key = 'fragrance.' | append: t -%}
+          <dt class="notes__label">{% render 'icon', name: icon_name, size: 18 %}<span>{{ label_key | t }}</span></dt>
+          <dd class="notes__list">
+            {%- for n in list -%}<span>{{ n | strip }}</span>{%- unless forloop.last -%}<i aria-hidden="true">·</i>{%- endunless -%}{%- endfor -%}
+          </dd>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </dl>
+{%- elsif request.design_mode -%}
+  <p class="editor-hint">{{ 'fragrance.notes_missing_hint' | t }}</p>
+{%- endif -%}

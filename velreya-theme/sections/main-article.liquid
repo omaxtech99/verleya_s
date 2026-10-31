@@ -1,0 +1,12 @@
+<article class="article section--ivory">
+  <div class="container container--narrow">
+    <p class="eyebrow">{{ article.published_at | time_tag: format: 'date' }}</p>
+    <h1 class="display article__title">{{ article.title }}</h1>
+    {%- if article.image -%}<figure class="article__media">{% render 'image', image: article.image, sizes: '(min-width: 990px) 800px, 100vw', loading: 'eager' %}</figure>{%- endif -%}
+    <div class="rte">{{ article.content }}</div>
+    <a class="link-arrow" href="{{ blog.url }}">{{ 'blog.back' | t }}{% render 'icon', name: 'arrow-right', size: 16 %}</a>
+  </div>
+</article>
+{% schema %}
+{ "name": "Article", "settings": [] }
+{% endschema %}

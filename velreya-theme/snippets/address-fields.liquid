@@ -1,0 +1,10 @@
+{%- assign fields = 'first_name:given-name,last_name:family-name,company:organization,address1:address-line1,address2:address-line2,city:address-level2,zip:postal-code,phone:tel' | split: ',' -%}
+{%- for f in fields -%}
+  {%- assign parts = f | split: ':' -%}
+  {%- assign key = parts[0] -%}
+  {%- assign label_key = 'customer.address_fields.' | append: key -%}
+  <div class="field"><label for="Addr{{ key }}{{ id }}">{{ label_key | t }}</label><input id="Addr{{ key }}{{ id }}" type="text" name="address[{{ key }}]" autocomplete="{{ parts[1] }}" value="{{ form[key] }}"></div>
+{%- endfor -%}
+<div class="field"><label for="AddrCountry{{ id }}">{{ 'customer.address_fields.country' | t }}</label><select id="AddrCountry{{ id }}" name="address[country]" data-default="{{ form.country }}">{{ all_country_option_tags }}</select></div>
+<div class="field"><label for="AddrProvince{{ id }}">{{ 'customer.address_fields.province' | t }}</label><input id="AddrProvince{{ id }}" type="text" name="address[province]" autocomplete="address-level1" value="{{ form.province }}"></div>
+<label class="checkbox">{{ form.set_as_default_checkbox }} <span>{{ 'customer.set_default' | t }}</span></label>

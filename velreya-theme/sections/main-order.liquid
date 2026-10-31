@@ -1,0 +1,38 @@
+<section class="account section--ivory">
+  <div class="container container--wide">
+    <a class="link-quiet" href="{{ routes.account_url }}">← {{ 'customer.account' | t }}</a>
+    <h1 class="display account__title">{{ 'customer.order' | t }} {{ order.name }}</h1>
+    <p>{{ order.created_at | time_tag: format: 'date_at_time' }}</p>
+    {%- if order.cancelled -%}<p class="form-error">{{ 'customer.cancelled' | t }}: {{ order.cancel_reason_label }}</p>{%- endif -%}
+    <table class="table">
+      <thead><tr><th scope="col">{{ 'customer.product' | t }}</th><th scope="col">{{ 'cart.quantity' | t }}</th><th scope="col">{{ 'customer.total' | t }}</th></tr></thead>
+      <tbody>
+        {%- for item in order.line_items -%}
+          <tr>
+            <td>
+              <a href="{{ item.product.url }}">{{ item.title }}</a>
+              {%- for p in item.properties -%}{%- assign fc = p.first | slice: 0 -%}{%- unless p.last == blank or fc == '_' -%}<br><small>{{ p.first }}: {{ p.last }}</small>{%- endunless -%}{%- endfor -%}
+              {%- if item.item_components.size > 0 -%}<ul class="cart-line__components">{%- for c in item.item_components -%}<li>{{ c.quantity }} × {{ c.title }}</li>{%- endfor -%}</ul>{%- endif -%}
+              {%- if item.fulfillment -%}<br><small>{{ item.fulfillment.created_at | time_tag: format: 'date' }} {% if item.fulfillment.tracking_url %}<a href="{{ item.fulfillment.tracking_url }}">{{ 'customer.track' | t }}</a>{% endif %}</small>{%- endif -%}
+            </td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.final_line_price | money }}</td>
+          </tr>
+        {%- endfor -%}
+      </tbody>
+      <tfoot>
+        <tr><th scope="row" colspan="2">{{ 'cart.subtotal' | t }}</th><td>{{ order.line_items_subtotal_price | money }}</td></tr>
+        {%- for s in order.shipping_methods -%}<tr><th scope="row" colspan="2">{{ s.title }}</th><td>{{ s.price | money }}</td></tr>{%- endfor -%}
+        {%- for t in order.tax_lines -%}<tr><th scope="row" colspan="2">{{ t.title }} ({{ t.rate_percentage }}%)</th><td>{{ t.price | money }}</td></tr>{%- endfor -%}
+        <tr><th scope="row" colspan="2">{{ 'customer.total' | t }}</th><td>{{ order.total_price | money_with_currency }}</td></tr>
+      </tfoot>
+    </table>
+    <div class="account__grid">
+      <div><h2 class="account__subtitle">{{ 'customer.billing' | t }}</h2>{{ order.billing_address | format_address }}</div>
+      <div><h2 class="account__subtitle">{{ 'customer.shipping' | t }}</h2>{{ order.shipping_address | format_address }}</div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{ "name": "Order", "settings": [] }
+{% endschema %}

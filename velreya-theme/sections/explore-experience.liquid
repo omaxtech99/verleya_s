@@ -1,0 +1,98 @@
+{%- comment -%}
+  Native Liquid version of the VELREYA Explore storytelling experience.
+  One full-height chapter per fragrance, driven by product data and metafields:
+  velreya.atmosphere / atmosphere_secondary (colors), velreya.story, notes, velreya.campaign_video (file).
+  Video loads only for the chapter in view, and is paused when it leaves. Native scrolling — no hijacking.
+{%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+  assign col = s.collection | default: collections.all
+-%}
+<explore-experience class="explore section--dark" data-explore>
+  <section class="explore__intro" aria-labelledby="ExploreIntro">
+    <div class="explore__intro-glow" aria-hidden="true"></div>
+    <div class="container container--wide">
+      <p class="eyebrow eyebrow--gold">{{ s.eyebrow }}</p>
+      <h1 class="display explore__intro-title" id="ExploreIntro">{{ s.title }}</h1>
+      {%- if s.text != blank -%}<p class="explore__intro-text">{{ s.text }}</p>{%- endif -%}
+      <span class="hero__scroll" aria-hidden="true"></span>
+    </div>
+  </section>
+
+  {%- if col != blank -%}
+    <nav class="explore__index" aria-label="{{ 'explore.index' | t }}">
+      <ol role="list">
+        {%- for p in col.products limit: 24 -%}
+          <li><a href="#{{ p.handle }}" data-explore-link="{{ p.handle }}"><span class="explore__index-num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span><span class="explore__index-name">{{ p.title }}</span></a></li>
+        {%- endfor -%}
+      </ol>
+    </nav>
+
+    {%- for p in col.products limit: 24 -%}
+      {%- liquid
+        assign tint = p.metafields.velreya.atmosphere.value | default: settings.color_bronze
+        assign tint2 = p.metafields.velreya.atmosphere_secondary.value | default: settings.color_black
+        assign video = p.metafields.velreya.campaign_video.value
+        assign side = forloop.index | modulo: 2
+      -%}
+      <section class="xchapter xchapter--{% if side == 0 %}right{% else %}left{% endif %}" id="{{ p.handle }}" style="--tint: {{ tint }}; --tint-2: {{ tint2 }};" data-explore-chapter="{{ p.handle }}" aria-labelledby="X-{{ p.handle }}">
+        <div class="xchapter__atmos" aria-hidden="true"></div>
+        {%- if video -%}
+          <video class="xchapter__video" muted playsinline loop preload="none" aria-hidden="true" data-chapter-video{% if video.preview_image %} poster="{{ video.preview_image | image_url: width: 1600 }}"{% endif %}>
+            {%- for source in video.sources -%}{%- if source.mime_type == 'video/mp4' -%}<source data-src="{{ source.url }}" type="video/mp4">{%- endif -%}{%- endfor -%}
+          </video>
+        {%- endif -%}
+        <div class="container container--wide xchapter__grid">
+          <figure class="xchapter__bottle">
+            {%- if p.featured_media -%}
+              {% render 'image', image: p.featured_media.preview_image, sizes: '(min-width: 990px) 40vw, 80vw', alt: p.title %}
+            {%- else -%}
+              {% render 'bottle-placeholder', tint: tint, label: p.title %}
+            {%- endif -%}
+          </figure>
+          <div class="xchapter__copy">
+            <span class="xchapter__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }} / {{ col.products.size | prepend: '0' | slice: -2, 2 }}</span>
+            <h2 class="display xchapter__title" id="X-{{ p.handle }}">{{ p.title }}</h2>
+            {%- assign character = p.metafields.velreya.character.value -%}
+            {%- if character != blank -%}<p class="xchapter__character">{{ character }}</p>{%- endif -%}
+            {%- assign story = p.metafields.velreya.story.value -%}
+            {%- if story != blank -%}<p class="xchapter__story">{{ story | newline_to_br }}</p>{%- endif -%}
+            {% render 'fragrance-notes', product: p, style: 'stacked' %}
+            <div class="xchapter__buy">
+              {% render 'price', product: p, show_from: true %}
+              <a class="btn btn--ivory" href="{{ p.url }}">{{ 'products.shop_now' | t }}</a>
+            </div>
+          </div>
+        </div>
+        {%- if video -%}
+          <button type="button" class="icon-btn xchapter__toggle" data-chapter-toggle aria-label="{{ 'general.pause_video' | t }}" aria-pressed="false" hidden><span class="vt vt--pause">{% render 'icon', name: 'pause', size: 16 %}</span><span class="vt vt--play">{% render 'icon', name: 'play', size: 16 %}</span></button>
+        {%- endif -%}
+      </section>
+    {%- endfor -%}
+
+    <section class="explore__outro">
+      <div class="container">
+        <h2 class="display">{{ s.outro_title }}</h2>
+        <div class="explore__outro-ctas">
+          <a class="btn btn--ivory" href="{{ col.url }}">{{ 'general.explore_fragrances' | t }}</a>
+          {%- if settings.discovery_product != blank -%}<button type="button" class="btn btn--ghost" data-discovery-open>{{ 'discovery.cta' | t }}</button>{%- endif -%}
+        </div>
+      </div>
+    </section>
+  {%- elsif request.design_mode -%}
+    <div class="container"><p class="editor-hint">{{ 'onboarding.choose_collection' | t }}</p></div>
+  {%- endif -%}
+</explore-experience>
+{% schema %}
+{
+  "name": "Explore experience",
+  "settings": [
+    { "type": "collection", "id": "collection", "label": "Fragrances" },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "Explore" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Every fragrance has a story." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Scroll slowly. Each creation has its own light, its own mood and its own notes." },
+    { "type": "text", "id": "outro_title", "label": "Closing heading", "default": "Which story is yours?" }
+  ],
+  "presets": [ { "name": "Explore experience" } ]
+}
+{% endschema %}

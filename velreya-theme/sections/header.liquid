@@ -1,0 +1,101 @@
+{%- liquid
+  assign menu = section.settings.menu
+  assign transparent = false
+  if section.settings.transparent_home and template.name == 'index'
+    assign transparent = true
+  endif
+-%}
+<site-header class="header{% if transparent %} header--transparent{% endif %}" data-header>
+  <div class="header__inner container container--wide">
+    <button type="button" class="icon-btn header__burger" data-menu-open aria-controls="MenuDrawer" aria-expanded="false" aria-label="{{ 'general.menu' | t }}">{% render 'icon', name: 'menu' %}</button>
+
+    <nav class="header__nav" aria-label="{{ 'general.primary_nav' | t }}">
+      <ul class="nav" role="list">
+        {%- for link in menu.links -%}
+          <li class="nav__item{% if link.links != blank %} has-sub{% endif %}">
+            {%- if link.links != blank -%}
+              <details class="nav__details">
+                <summary class="nav__link{% if link.child_active or link.active %} is-active{% endif %}">{{ link.title }}{% render 'icon', name: 'chevron-down', size: 12 %}</summary>
+                <ul class="nav__sub" role="list">
+                  {%- for child in link.links -%}
+                    <li><a class="nav__sublink" href="{{ child.url }}"{% if child.current %} aria-current="page"{% endif %}>{{ child.title }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              </details>
+            {%- else -%}
+              <a class="nav__link{% if link.active %} is-active{% endif %}" href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    <a class="header__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
+      {%- if settings.logo != blank -%}
+        {{ settings.logo | image_url: width: 520 | image_tag: class: 'logo logo--light', alt: shop.name, widths: '260, 520', sizes: '260px', loading: 'eager' }}
+        {%- if settings.logo_dark != blank -%}
+          {{ settings.logo_dark | image_url: width: 520 | image_tag: class: 'logo logo--dark', alt: shop.name, widths: '260, 520', sizes: '260px', loading: 'eager' }}
+        {%- endif -%}
+      {%- else -%}
+        <span class="wordmark">{{ shop.name | upcase }}</span>
+      {%- endif -%}
+    </a>
+
+    <div class="header__icons">
+      <button type="button" class="icon-btn" data-search-open aria-controls="SearchOverlay" aria-label="{{ 'search.title' | t }}">{% render 'icon', name: 'search' %}</button>
+      {%- if shop.customer_accounts_enabled -%}
+        <a class="icon-btn header__account" href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" aria-label="{% if customer %}{{ 'customer.account' | t }}{% else %}{{ 'customer.log_in' | t }}{% endif %}">{% render 'icon', name: 'account' %}</a>
+      {%- endif -%}
+      <a class="icon-btn header__cart" href="{{ routes.cart_url }}" data-cart-open aria-label="{{ 'cart.title' | t }}">
+        {% render 'icon', name: 'bag' %}
+        <span class="header__count" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span>
+      </a>
+    </div>
+  </div>
+</site-header>
+
+<menu-drawer class="menu-drawer" id="MenuDrawer" hidden>
+  <div class="drawer__overlay" data-menu-close></div>
+  <div class="menu-drawer__panel" role="dialog" aria-modal="true" aria-label="{{ 'general.menu' | t }}" tabindex="-1">
+    <div class="drawer__head">
+      <span class="wordmark wordmark--sm">{{ shop.name | upcase }}</span>
+      <button type="button" class="icon-btn" data-menu-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
+    </div>
+    <ul class="menu-drawer__list" role="list">
+      {%- for link in menu.links -%}
+        <li>
+          {%- if link.links != blank -%}
+            <details>
+              <summary class="menu-drawer__link">{{ link.title }}{% render 'icon', name: 'plus', size: 16 %}</summary>
+              <ul role="list" class="menu-drawer__sub">
+                {%- for child in link.links -%}<li><a href="{{ child.url }}">{{ child.title }}</a></li>{%- endfor -%}
+              </ul>
+            </details>
+          {%- else -%}
+            <a class="menu-drawer__link" href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+    <div class="menu-drawer__foot">
+      {%- if settings.discovery_product != blank -%}
+        <button type="button" class="btn btn--outline btn--block" data-discovery-open>{{ 'discovery.cta' | t }}</button>
+      {%- endif -%}
+      {%- if shop.customer_accounts_enabled -%}
+        <a class="link-quiet" href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}">{% if customer %}{{ 'customer.account' | t }}{% else %}{{ 'customer.log_in' | t }}{% endif %}</a>
+      {%- endif -%}
+      {% render 'social-icons' %}
+    </div>
+  </div>
+</menu-drawer>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "header-wrapper",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
+    { "type": "checkbox", "id": "transparent_home", "label": "Transparent over homepage hero", "default": true }
+  ]
+}
+{% endschema %}

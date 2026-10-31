@@ -1,0 +1,112 @@
+{%- comment -%}
+  Shared cart body used by the drawer and the cart page. Params: context ('drawer' | 'page')
+{%- endcomment -%}
+<div class="cart-contents cart-contents--{{ context }}" data-cart-contents data-item-count="{{ cart.item_count }}">
+  {%- if cart.item_count > 0 -%}
+    <form action="{{ routes.cart_url }}" method="post" class="cart-form" id="CartForm-{{ context }}" novalidate>
+      <ul class="cart-lines" role="list">
+        {%- for item in cart.items -%}
+          <li class="cart-line" data-line="{{ forloop.index }}" data-key="{{ item.key }}">
+            <a class="cart-line__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+              {%- if item.image -%}
+                {{ item.image | image_url: width: 240 | image_tag: loading: 'lazy', alt: '', widths: '120, 240' }}
+              {%- else -%}
+                {% render 'bottle-placeholder', variant: 'mini', label: item.product.title %}
+              {%- endif -%}
+            </a>
+            <div class="cart-line__info">
+              <a class="cart-line__title" href="{{ item.url }}">{{ item.product.title }}</a>
+              {%- unless item.product.has_only_default_variant or item.variant.title == 'Default Title' -%}
+                <p class="cart-line__variant">{{ item.variant.title }}</p>
+              {%- endunless -%}
+
+              {%- liquid
+                assign visible_props = 0
+                for p in item.properties
+                  assign first_char = p.first | slice: 0
+                  if p.last != blank and first_char != '_'
+                    assign visible_props = visible_props | plus: 1
+                  endif
+                endfor
+              -%}
+              {%- if visible_props > 0 -%}
+                <dl class="cart-line__props">
+                  {%- for p in item.properties -%}
+                    {%- assign first_char = p.first | slice: 0 -%}
+                    {%- if p.last != blank and first_char != '_' -%}
+                      <div><dt>{{ p.first }}</dt><dd>{{ p.last }}</dd></div>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </dl>
+              {%- endif -%}
+
+              {%- if item.item_components.size > 0 -%}
+                <ul class="cart-line__components" aria-label="{{ 'discovery.contents' | t }}">
+                  {%- for component in item.item_components -%}
+                    <li>{{ component.quantity }} × {{ component.product.title }}{% unless component.variant.title == 'Default Title' %} · {{ component.variant.title }}{% endunless %}</li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+
+              {%- for allocation in item.line_level_discount_allocations -%}
+                <p class="cart-line__discount">{{ allocation.discount_application.title }} (−{{ allocation.amount | money }})</p>
+              {%- endfor -%}
+
+              <div class="cart-line__actions">
+                <div class="qty" data-qty>
+                  <button type="button" class="qty__btn" data-qty-change="-1" aria-label="{{ 'cart.decrease' | t: product: item.product.title | escape }}">{% render 'icon', name: 'minus', size: 14 %}</button>
+                  <input class="qty__input" type="number" name="updates[]" value="{{ item.quantity }}" min="0" inputmode="numeric" aria-label="{{ 'cart.quantity_for' | t: product: item.product.title | escape }}" data-line-index="{{ forloop.index }}"{% if item.variant.inventory_management == 'shopify' and item.variant.inventory_policy == 'deny' %} max="{{ item.variant.inventory_quantity }}"{% endif %}>
+                  <button type="button" class="qty__btn" data-qty-change="1" aria-label="{{ 'cart.increase' | t: product: item.product.title | escape }}">{% render 'icon', name: 'plus', size: 14 %}</button>
+                </div>
+                <a class="cart-line__remove" href="{{ item.url_to_remove }}" data-line-remove="{{ forloop.index }}">{{ 'general.remove' | t }}</a>
+              </div>
+            </div>
+            <div class="cart-line__price">
+              {%- if item.original_line_price != item.final_line_price -%}
+                <s>{{ item.original_line_price | money }}</s>
+              {%- endif -%}
+              <span>{{ item.final_line_price | money }}</span>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      <div class="cart-summary">
+        {%- if settings.cart_show_note -%}
+          <details class="cart-note">
+            <summary>{{ 'cart.note' | t }}{% render 'icon', name: 'plus', size: 14 %}</summary>
+            <label class="visually-hidden" for="CartNote-{{ context }}">{{ 'cart.note' | t }}</label>
+            <textarea id="CartNote-{{ context }}" name="note" rows="3" data-cart-note placeholder="{{ 'cart.note_placeholder' | t }}">{{ cart.note }}</textarea>
+          </details>
+        {%- endif -%}
+
+        {%- for discount in cart.cart_level_discount_applications -%}
+          <p class="cart-summary__row"><span>{{ discount.title }}</span><span>−{{ discount.total_allocated_amount | money }}</span></p>
+        {%- endfor -%}
+
+        <p class="cart-summary__row cart-summary__total">
+          <span>{{ 'cart.subtotal' | t }}</span>
+          <span>{{ cart.total_price | money_with_currency }}</span>
+        </p>
+        {%- if settings.cart_reassurance != blank -%}
+          <p class="cart-summary__note">{{ settings.cart_reassurance }}</p>
+        {%- endif -%}
+        <button type="submit" name="checkout" class="btn btn--gold btn--block"{% if cart.empty? %} disabled{% endif %}>
+          {% render 'icon', name: 'lock', size: 16 %}<span>{{ 'cart.checkout' | t }}</span>
+        </button>
+        {%- if context == 'drawer' -%}
+          <a class="link-quiet" href="{{ routes.cart_url }}">{{ 'cart.view_bag' | t }}</a>
+        {%- endif -%}
+      </div>
+    </form>
+  {%- else -%}
+    <div class="cart-empty">
+      <p class="eyebrow">{{ 'cart.title' | t }}</p>
+      <p class="cart-empty__title">{{ 'cart.empty' | t }}</p>
+      <a class="btn btn--outline" href="{{ routes.all_products_collection_url }}">{{ 'general.explore_fragrances' | t }}</a>
+      {%- if settings.discovery_product != blank -%}
+        <button type="button" class="link-arrow" data-discovery-open>{{ 'discovery.cta' | t }}{% render 'icon', name: 'arrow-right', size: 16 %}</button>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>

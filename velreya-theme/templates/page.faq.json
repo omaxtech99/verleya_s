@@ -1,0 +1,61 @@
+{
+  "sections": {
+    "faq": {
+      "type": "faq",
+      "settings": {
+        "title": "Frequently asked",
+        "text": "<p>Add your answers in the theme editor. Only publish information that reflects your actual policies.</p>"
+      },
+      "blocks": {
+        "faq-0": {
+          "type": "question",
+          "settings": {
+            "question": "How does the discovery set work?",
+            "answer": "<p>Choose any four of our fragrances. Each arrives as a 12ml miniature, so you can wear them over days before committing to a full bottle.</p>"
+          }
+        },
+        "faq-1": {
+          "type": "question",
+          "settings": {
+            "question": "What is the difference between top, heart and base notes?",
+            "answer": "<p>Top notes are the first impression after spraying, heart notes form the character as the fragrance settles, and base notes are the deep, lasting trail.</p>"
+          }
+        },
+        "faq-2": {
+          "type": "question",
+          "settings": {
+            "question": "Where do you ship, and how long does delivery take?",
+            "answer": "<p>Please see our shipping policy for current coverage and timelines.</p>"
+          }
+        },
+        "faq-3": {
+          "type": "question",
+          "settings": {
+            "question": "Can I return a fragrance?",
+            "answer": "<p>Please see our refund policy for the exact conditions.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq-0",
+        "faq-1",
+        "faq-2",
+        "faq-3"
+      ]
+    },
+    "contact": {
+      "type": "rich-text",
+      "settings": {
+        "scheme": "dark",
+        "title": "Still curious?",
+        "text": "<p>Our team is happy to help you find your fragrance.</p>",
+        "cta": "Contact us",
+        "link": "/pages/contact"
+      }
+    }
+  },
+  "order": [
+    "faq",
+    "contact"
+  ]
+}

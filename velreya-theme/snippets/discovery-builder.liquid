@@ -1,0 +1,111 @@
+{%- comment -%}
+  Build-your-own discovery set. Data comes entirely from Shopify:
+  - settings.discovery_product: the bundle (parent) product. Its variant price IS the set price.
+  - settings.discovery_collection: the fragrances offered.
+  - settings.mini_option_value: the option value identifying each fragrance's miniature variant (e.g. "12ml").
+  The selection is added as ONE line (the parent variant) carrying the chosen component variant IDs.
+  The Cart Transform function in /shopify/velreya-bundles-app expands it into the real 12ml
+  component variants at the parent's price, so inventory and order components are correct.
+  Params: context ('modal' | 'page')
+{%- endcomment -%}
+{%- liquid
+  assign bundle = settings.discovery_product
+  assign bundle_variant = bundle.selected_or_first_available_variant
+  assign needed = settings.discovery_count | default: 4
+  assign mini_key = settings.mini_option_value | downcase | remove: ' '
+  assign discovery_col = settings.discovery_collection | default: collections.all
+  assign fragrances = discovery_col.products
+-%}
+<discovery-builder class="atelier atelier--{{ context }}" data-needed="{{ needed }}" data-variant-id="{{ bundle_variant.id }}" data-available="{{ bundle_variant.available }}">
+  <header class="atelier__head">
+    <p class="eyebrow">{{ 'discovery.eyebrow' | t }}</p>
+    <h2 class="atelier__title" id="AtelierTitle-{{ context }}">{{ 'discovery.modal_title' | t }}</h2>
+    <p class="atelier__sub">{{ 'discovery.modal_sub' | t: count: needed }}</p>
+  </header>
+
+  {%- if bundle == blank -%}
+    <p class="editor-hint">{{ 'discovery.setup_hint' | t }}</p>
+  {%- else -%}
+    <div class="atelier__grid">
+      <div class="atelier__choices" role="group" aria-labelledby="AtelierTitle-{{ context }}">
+        <ol class="atelier__list" role="list">
+          {%- for p in fragrances limit: 24 -%}
+            {%- liquid
+              assign mini = nil
+              for v in p.variants
+                for o in v.options
+                  assign ok = o | downcase | remove: ' '
+                  if ok == mini_key
+                    assign mini = v
+                    break
+                  endif
+                endfor
+                if mini
+                  break
+                endif
+              endfor
+              assign tint = p.metafields.velreya.atmosphere.value | default: settings.color_bronze
+              assign mini_img = p.metafields.velreya.mini_image.value | default: mini.image | default: p.featured_image
+            -%}
+            {%- if mini -%}
+              <li class="scent{% unless mini.available %} is-unavailable{% endunless %}" style="--tint: {{ tint }};" data-scent data-id="{{ mini.id }}" data-title="{{ p.title | escape }}" data-available="{{ mini.available }}">
+                <button type="button" class="scent__pick" aria-pressed="false" data-scent-toggle{% unless mini.available %} disabled aria-disabled="true"{% endunless %}>
+                  <span class="scent__media" data-scent-media>
+                    {%- if mini_img -%}
+                      {{ mini_img | image_url: width: 300 | image_tag: loading: 'lazy', alt: '', widths: '150, 300', sizes: '96px' }}
+                    {%- else -%}
+                      {% render 'bottle-placeholder', variant: 'mini', tint: tint, label: p.title %}
+                    {%- endif -%}
+                  </span>
+                  <span class="scent__text">
+                    <span class="scent__name">{{ p.title }}</span>
+                    {%- assign character = p.metafields.velreya.character.value -%}
+                    {%- if character != blank -%}<span class="scent__character">{{ character }}</span>{%- endif -%}
+                    <span class="scent__status">
+                      {%- if mini.available -%}{{ settings.mini_option_value }}{%- else -%}{{ 'products.sold_out' | t }}{%- endif -%}
+                    </span>
+                  </span>
+                  <span class="scent__check" aria-hidden="true">{% render 'icon', name: 'check', size: 16 %}</span>
+                </button>
+                <details class="scent__notes">
+                  <summary>{{ 'fragrance.view_notes' | t }}<span class="visually-hidden"> — {{ p.title }}</span>{% render 'icon', name: 'chevron-down', size: 14 %}</summary>
+                  {% render 'fragrance-notes', product: p, style: 'stacked' %}
+                </details>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ol>
+      </div>
+
+      <aside class="atelier__stage" aria-label="{{ 'discovery.your_set' | t }}">
+        <div class="atelier__light" aria-hidden="true"></div>
+        <ol class="atelier__slots" role="list" data-slots>
+          {%- for i in (1..needed) -%}
+            <li class="slot" data-slot>
+              <span class="slot__bottle" data-slot-media><span class="slot__empty">{{ i }}</span></span>
+              <span class="slot__name" data-slot-name>{{ 'discovery.empty_slot' | t }}</span>
+              <button type="button" class="slot__remove" data-slot-remove hidden>{{ 'general.remove' | t }}</button>
+            </li>
+          {%- endfor -%}
+        </ol>
+        <div class="atelier__summary">
+          <p class="atelier__progress" aria-live="polite">
+            <span data-count>0</span> / {{ needed }} <span>{{ 'discovery.selected' | t }}</span>
+          </p>
+          <div class="atelier__bar" aria-hidden="true"><span data-bar></span></div>
+          <div class="atelier__price">
+            <span class="atelier__price-label">{{ bundle.title }}</span>
+            {% render 'price', product: bundle, variant: bundle_variant %}
+          </div>
+          <button type="button" class="btn btn--gold btn--block" data-add-set disabled>
+            {{ 'discovery.select_n' | t: count: needed }}
+          </button>
+          <p class="atelier__error" role="alert" data-error hidden></p>
+          {%- unless bundle_variant.available -%}
+            <p class="atelier__error">{{ 'discovery.unavailable' | t }}</p>
+          {%- endunless -%}
+        </div>
+      </aside>
+    </div>
+  {%- endif -%}
+</discovery-builder>

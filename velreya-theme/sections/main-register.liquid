@@ -1,0 +1,17 @@
+<section class="account section--ivory">
+  <div class="container container--narrow account__card">
+    <h1 class="display account__title">{{ 'customer.create_account' | t }}</h1>
+    {%- form 'create_customer', novalidate: 'novalidate' -%}
+      {%- if form.errors -%}<div class="form-error" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+      <div class="field"><label for="RegFirst">{{ 'customer.first_name' | t }}</label><input id="RegFirst" type="text" name="customer[first_name]" autocomplete="given-name" value="{{ form.first_name }}"></div>
+      <div class="field"><label for="RegLast">{{ 'customer.last_name' | t }}</label><input id="RegLast" type="text" name="customer[last_name]" autocomplete="family-name" value="{{ form.last_name }}"></div>
+      <div class="field"><label for="RegEmail">{{ 'customer.email' | t }}</label><input id="RegEmail" type="email" name="customer[email]" autocomplete="email" required value="{{ form.email }}"></div>
+      <div class="field"><label for="RegPassword">{{ 'customer.password' | t }}</label><input id="RegPassword" type="password" name="customer[password]" autocomplete="new-password" required></div>
+      <label class="checkbox"><input type="checkbox" name="customer[accepts_marketing]"> <span>{{ 'customer.accepts_marketing' | t }}</span></label>
+      <button type="submit" class="btn btn--dark btn--block">{{ 'customer.create' | t }}</button>
+    {%- endform -%}
+  </div>
+</section>
+{% schema %}
+{ "name": "Register", "settings": [] }
+{% endschema %}

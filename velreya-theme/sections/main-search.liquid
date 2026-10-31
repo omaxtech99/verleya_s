@@ -1,0 +1,42 @@
+{%- paginate search.results by 24 -%}
+<section class="plp section--ivory">
+  <header class="plp__hero plp__hero--compact section--dark">
+    <div class="container container--wide plp__hero-copy">
+      <p class="eyebrow eyebrow--gold">{{ 'search.title' | t }}</p>
+      <form action="{{ routes.search_url }}" method="get" role="search" class="search-page__form">
+        <input type="hidden" name="type" value="product">
+        <label class="visually-hidden" for="SearchPageInput">{{ 'search.placeholder' | t }}</label>
+        <input id="SearchPageInput" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'search.placeholder' | t }}" autocomplete="off">
+        <button type="submit" class="icon-btn" aria-label="{{ 'search.submit' | t }}">{% render 'icon', name: 'search', size: 22 %}</button>
+      </form>
+      {%- if search.performed -%}
+        <p class="plp__desc" role="status">{{ 'search.results_count' | t: count: search.results_count, terms: search.terms | escape }}</p>
+      {%- endif -%}
+    </div>
+  </header>
+  <div class="container container--wide" data-results-container>
+    {%- if search.performed -%}
+      {%- if search.filters.size > 0 -%}{%- assign current_sort = search.sort_by | default: search.default_sort_by -%}{% render 'facets', results: search, sort_by: current_sort, url: routes.search_url %}{%- endif -%}
+      {%- if search.results_count > 0 -%}
+        <ul class="grid grid--4 plp__grid" role="list">
+          {%- for item in search.results -%}
+            <li>
+              {%- if item.object_type == 'product' -%}
+                {% render 'product-card', product: item, sizes: '(min-width: 990px) 22vw, 48vw' %}
+              {%- else -%}
+                <a class="result-link" href="{{ item.url }}"><span class="eyebrow">{{ item.object_type }}</span><span>{{ item.title }}</span></a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+        {% render 'pagination', paginate: paginate %}
+      {%- else -%}
+        <div class="empty-state"><p>{{ 'search.no_results' | t: terms: search.terms | escape }}</p><a class="btn btn--outline" href="{{ routes.all_products_collection_url }}">{{ 'general.explore_fragrances' | t }}</a></div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</section>
+{%- endpaginate -%}
+{% schema %}
+{ "name": "Search results", "settings": [] }
+{% endschema %}

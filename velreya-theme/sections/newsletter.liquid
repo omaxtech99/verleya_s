@@ -1,0 +1,36 @@
+{%- assign s = section.settings -%}
+<section class="newsletter section--dark" aria-labelledby="Newsletter-{{ section.id }}">
+  <div class="container newsletter__inner" data-reveal>
+    <p class="eyebrow eyebrow--gold">{{ s.eyebrow }}</p>
+    <h2 class="display newsletter__title" id="Newsletter-{{ section.id }}">{{ s.title }}</h2>
+    {%- if s.text != blank -%}<p class="newsletter__text">{{ s.text }}</p>{%- endif -%}
+    {%- form 'customer', class: 'newsletter__form', id: 'NewsletterForm' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      {%- if form.posted_successfully? -%}
+        <p class="form-success" role="status" tabindex="-1" autofocus>{{ 'newsletter.success' | t }}</p>
+      {%- else -%}
+        <div class="field field--inline">
+          <label class="visually-hidden" for="NewsletterEmail">{{ 'newsletter.email' | t }}</label>
+          <input id="NewsletterEmail" type="email" name="contact[email]" required autocomplete="email" placeholder="{{ 'newsletter.email' | t }}" value="{{ form.email }}"
+            {% if form.errors %}aria-invalid="true" aria-describedby="NewsletterError"{% endif %}>
+          <button type="submit" class="btn btn--ivory">{{ s.button }}</button>
+        </div>
+        {%- if form.errors -%}<p class="form-error" id="NewsletterError">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>{%- endif -%}
+      {%- endif -%}
+    {%- endform -%}
+    {%- if s.disclaimer != blank -%}<p class="newsletter__fine">{{ s.disclaimer }}</p>{%- endif -%}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The Velreya letter" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Be the first to know" },
+    { "type": "text", "id": "text", "label": "Text", "default": "New creations, private previews and stories from the house." },
+    { "type": "text", "id": "button", "label": "Button", "default": "Subscribe" },
+    { "type": "inline_richtext", "id": "disclaimer", "label": "Fine print", "default": "You can unsubscribe at any time." }
+  ],
+  "presets": [ { "name": "Newsletter" } ]
+}
+{% endschema %}

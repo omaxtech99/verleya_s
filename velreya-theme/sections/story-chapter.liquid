@@ -1,0 +1,36 @@
+{%- assign s = section.settings -%}
+<section class="chapter section--{{ s.scheme }} chapter--{{ s.layout }}">
+  <div class="container container--wide chapter__grid">
+    <figure class="chapter__media" data-reveal>
+      {%- if s.image != blank -%}
+        {% render 'image', image: s.image, sizes: '(min-width: 990px) 50vw, 100vw' %}
+      {%- else -%}
+        <div class="media-placeholder">{{ 'onboarding.image_hint' | t }}</div>
+      {%- endif -%}
+    </figure>
+    <div class="chapter__copy" data-reveal>
+      {%- if s.number != blank -%}<span class="chapter__num">{{ s.number }}</span>{%- endif -%}
+      <p class="eyebrow">{{ s.eyebrow }}</p>
+      <h2 class="display chapter__title">{{ s.title }}</h2>
+      <div class="rte">{{ s.text }}</div>
+      {%- if s.cta != blank and s.link != blank -%}<a class="link-arrow" href="{{ s.link }}">{{ s.cta }}{% render 'icon', name: 'arrow-right', size: 16 %}</a>{%- endif -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Story chapter",
+  "settings": [
+    { "type": "select", "id": "scheme", "label": "Color scheme", "options": [ { "value": "dark", "label": "Black" }, { "value": "ivory", "label": "Ivory" }, { "value": "charcoal", "label": "Charcoal" } ], "default": "ivory" },
+    { "type": "select", "id": "layout", "label": "Layout", "options": [ { "value": "image-left", "label": "Image left" }, { "value": "image-right", "label": "Image right" } ], "default": "image-left" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "number", "label": "Chapter number", "default": "I" },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "Chapter" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Chapter heading" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Tell this part of your story in your own words.</p>" },
+    { "type": "text", "id": "cta", "label": "Link label" },
+    { "type": "url", "id": "link", "label": "Link" }
+  ],
+  "presets": [ { "name": "Story chapter" } ]
+}
+{% endschema %}

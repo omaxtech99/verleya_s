@@ -1,0 +1,41 @@
+{
+  "sections": {
+    "builder": {
+      "type": "discovery-builder",
+      "settings": {
+        "context": "page"
+      }
+    },
+    "confidence": {
+      "type": "customer-confidence",
+      "blocks": {
+        "confidence-0": {
+          "type": "item",
+          "settings": {
+            "icon": "lock",
+            "title": "Secure checkout",
+            "text": "Payments are processed through Shopify's encrypted checkout."
+          }
+        },
+        "confidence-1": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "Shipping",
+            "text": "Delivery coverage, timelines and charges are listed in our shipping policy.",
+            "policy": "shipping",
+            "link_label": "Shipping policy"
+          }
+        }
+      },
+      "block_order": [
+        "confidence-0",
+        "confidence-1"
+      ]
+    }
+  },
+  "order": [
+    "builder",
+    "confidence"
+  ]
+}

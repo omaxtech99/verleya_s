@@ -1,0 +1,21 @@
+{%- assign s = section.settings -%}
+<section class="page-hero section--dark{% if s.image != blank %} page-hero--image{% endif %}">
+  {%- if s.image != blank -%}<div class="page-hero__media" aria-hidden="true">{% render 'image', image: s.image, sizes: '100vw', loading: 'eager' %}</div>{%- endif -%}
+  <div class="container container--wide page-hero__copy" data-reveal>
+    {%- if s.eyebrow != blank -%}<p class="eyebrow eyebrow--gold">{{ s.eyebrow }}</p>{%- endif -%}
+    <h1 class="display page-hero__title">{{ s.title | default: page.title }}</h1>
+    {%- if s.text != blank -%}<p class="page-hero__text">{{ s.text }}</p>{%- endif -%}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Page hero",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "eyebrow", "label": "Label" },
+    { "type": "text", "id": "title", "label": "Heading", "info": "Defaults to the page title." },
+    { "type": "text", "id": "text", "label": "Text" }
+  ],
+  "presets": [ { "name": "Page hero" } ]
+}
+{% endschema %}

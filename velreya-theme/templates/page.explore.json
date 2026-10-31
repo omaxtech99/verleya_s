@@ -1,0 +1,10 @@
+{
+  "sections": {
+    "main": {
+      "type": "explore-experience"
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

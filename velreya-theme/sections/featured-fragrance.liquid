@@ -1,0 +1,56 @@
+{%- liquid
+  assign s = section.settings
+  assign p = s.product
+  assign tint = p.metafields.velreya.atmosphere.value | default: s.tint
+  assign tint2 = p.metafields.velreya.atmosphere_secondary.value | default: settings.color_black
+-%}
+<section class="spotlight" style="--tint: {{ tint }}; --tint-2: {{ tint2 }};" aria-labelledby="Spotlight-{{ section.id }}">
+  <div class="spotlight__atmos" aria-hidden="true"></div>
+  <div class="container container--wide spotlight__grid">
+    <div class="spotlight__visual" data-reveal>
+      {%- if s.image != blank -%}
+        {% render 'image', image: s.image, sizes: '(min-width: 990px) 50vw, 100vw', class: 'spotlight__img' %}
+      {%- elsif p.featured_media -%}
+        {% render 'image', image: p.featured_media.preview_image, sizes: '(min-width: 990px) 50vw, 100vw', class: 'spotlight__img', alt: p.title %}
+      {%- else -%}
+        {% render 'bottle-placeholder', tint: tint %}
+      {%- endif -%}
+    </div>
+    <div class="spotlight__copy" data-reveal>
+      <p class="eyebrow">{{ s.eyebrow }}</p>
+      {%- if p != blank -%}
+        <h2 class="spotlight__title display" id="Spotlight-{{ section.id }}">{{ p.title }}</h2>
+        {%- assign character = p.metafields.velreya.character.value -%}
+        {%- if character != blank -%}<p class="spotlight__character">{{ character }}</p>{%- endif -%}
+        {%- if s.text != blank -%}<div class="spotlight__text rte">{{ s.text }}</div>{%- elsif p.metafields.velreya.story != blank -%}<p class="spotlight__text">{{ p.metafields.velreya.story.value | truncatewords: 40 }}</p>{%- endif -%}
+        {% render 'fragrance-notes', product: p, style: 'columns' %}
+        <div class="spotlight__buy">
+          {% render 'price', product: p, show_from: true %}
+          <div class="spotlight__ctas">
+            <a class="btn btn--ivory" href="{{ p.url }}">{{ 'products.shop_now' | t }}</a>
+            {%- if s.explore_link != blank -%}
+              <a class="btn btn--ghost" href="{{ s.explore_link }}#{{ p.handle }}">{{ 'products.explore_fragrance' | t }}</a>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- else -%}
+        <h2 class="spotlight__title display" id="Spotlight-{{ section.id }}">{{ 'onboarding.product_title' | t }}</h2>
+        <p class="editor-hint">{{ 'onboarding.choose_product' | t }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Featured fragrance",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Fragrance" },
+    { "type": "image_picker", "id": "image", "label": "Campaign image", "info": "Defaults to the product's featured image." },
+    { "type": "color", "id": "tint", "label": "Atmosphere color fallback", "default": "#5A3B2A", "info": "Overridden by the product metafield velreya.atmosphere." },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "In the spotlight" },
+    { "type": "richtext", "id": "text", "label": "Text", "info": "Defaults to the product metafield velreya.story." },
+    { "type": "url", "id": "explore_link", "label": "Explore page link", "info": "For example /pages/explore" }
+  ],
+  "presets": [ { "name": "Featured fragrance" } ]
+}
+{% endschema %}

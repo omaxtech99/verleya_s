@@ -1,0 +1,210 @@
+{
+  "general": {
+    "skip_to_content": "Skip to content",
+    "tagged": "Tagged \"{{ tags }}\"",
+    "page": "Page {{ page }}",
+    "close": "Close",
+    "menu": "Menu",
+    "primary_nav": "Primary",
+    "announcement": "Announcement",
+    "home": "Home",
+    "breadcrumb": "Breadcrumb",
+    "explore_fragrances": "Explore fragrances",
+    "remove": "Remove",
+    "loading": "Loading",
+    "next": "Next",
+    "previous": "Previous",
+    "pagination": "Pagination",
+    "pause_video": "Pause video",
+    "play_video": "Play video"
+  },
+  "products": {
+    "add_to_bag": "Add to bag",
+    "adding": "Adding…",
+    "sold_out": "Sold out",
+    "unavailable": "Unavailable",
+    "from": "From",
+    "price": "Price",
+    "regular_price": "Regular price",
+    "view_fragrance": "View fragrance",
+    "shop_now": "Shop now",
+    "explore_fragrance": "Explore fragrance",
+    "explore_story": "Explore its story",
+    "gallery": "Product images"
+  },
+  "fragrance": {
+    "top": "Top notes",
+    "heart": "Heart notes",
+    "base": "Base notes",
+    "pyramid": "The composition",
+    "view_notes": "View notes",
+    "notes_missing_hint": "Add the fragrance notes to this product's metafields (velreya.top_notes, velreya.heart_notes, velreya.base_notes)."
+  },
+  "discovery": {
+    "eyebrow": "The Discovery Atelier",
+    "modal_title": "Curate your discovery set",
+    "modal_sub": {
+      "one": "Choose the fragrance that speaks to you.",
+      "other": "Choose {{ count }} fragrances that speak to you."
+    },
+    "cta": "Build your discovery set",
+    "select_n": {
+      "one": "Select a fragrance",
+      "other": "Select {{ count }} fragrances"
+    },
+    "add_set": "Add discovery set to bag",
+    "selected": "selected",
+    "limit_reached": {
+      "one": "Your set is complete. Remove the fragrance to change it.",
+      "other": "Your set holds {{ count }} fragrances. Remove one to choose another."
+    },
+    "added": "Your discovery set has been added to your bag.",
+    "empty_slot": "—",
+    "your_set": "Your discovery set",
+    "for_set": {
+      "one": "for {{ count }} × {{ size }}",
+      "other": "for {{ count }} × {{ size }}"
+    },
+    "contents": "Set contents",
+    "unavailable": "The discovery set is currently unavailable.",
+    "setup_hint": "Choose the discovery set product and fragrance collection in Theme settings → Discovery set."
+  },
+  "cart": {
+    "title": "Your bag",
+    "empty": "Your bag is empty",
+    "checkout": "Checkout",
+    "subtotal": "Subtotal",
+    "note": "Add a note",
+    "note_placeholder": "Gift message or special instructions",
+    "view_bag": "View bag",
+    "quantity": "Quantity",
+    "quantity_for": "Quantity for {{ product }}",
+    "decrease": "Decrease quantity for {{ product }}",
+    "increase": "Increase quantity for {{ product }}",
+    "decrease_generic": "Decrease quantity",
+    "increase_generic": "Increase quantity",
+    "error": "Something went wrong. Please try again."
+  },
+  "collections": {
+    "all": "All fragrances",
+    "fragrance_count": {
+      "one": "{{ count }} fragrance",
+      "other": "{{ count }} fragrances"
+    },
+    "sort_by": "Sort",
+    "from": "From",
+    "to": "To",
+    "apply": "Apply",
+    "clear_all": "Clear all",
+    "empty": "No fragrances match these filters."
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search fragrances",
+    "submit": "Search",
+    "products": "Fragrances",
+    "no_results": "No results for “{{ terms }}”.",
+    "view_all": "See all results for “{{ terms }}”",
+    "results_count": {
+      "one": "{{ count }} result for “{{ terms }}”",
+      "other": "{{ count }} results for “{{ terms }}”"
+    }
+  },
+  "contact": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "topic": "Topic",
+    "message": "Message",
+    "send": "Send message",
+    "success": "Thank you. We will be in touch soon."
+  },
+  "newsletter": {
+    "email": "Email address",
+    "success": "Thank you for subscribing."
+  },
+  "footer": {
+    "customer_care": "Customer care",
+    "rights": "All rights reserved.",
+    "payment_methods": "Payment methods",
+    "country": "Country / region"
+  },
+  "explore": {
+    "index": "Fragrances"
+  },
+  "blog": {
+    "back": "Back to the journal"
+  },
+  "password": {
+    "enter": "Enter with password",
+    "enter_button": "Enter",
+    "notify": "Notify me",
+    "password": "Password"
+  },
+  "gift_card": {
+    "title": "Gift card",
+    "code": "Code",
+    "expired": "This gift card is no longer valid.",
+    "shop": "Shop now"
+  },
+  "onboarding": {
+    "product_title": "Fragrance name",
+    "choose_collection": "Select a collection in the theme editor.",
+    "choose_product": "Select a fragrance in the theme editor.",
+    "image_hint": "Add an editorial image",
+    "explore_link": "Set the link to your Explore page."
+  },
+  "customer": {
+    "account": "Account",
+    "log_in": "Log in",
+    "log_out": "Log out",
+    "sign_in": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "password_confirm": "Confirm password",
+    "forgot_password": "Forgot your password?",
+    "create_account": "Create account",
+    "create": "Create",
+    "reset_password": "Reset password",
+    "recover_success": "We've sent you an email with a link to reset your password.",
+    "submit": "Submit",
+    "guest": "Continue as guest",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "accepts_marketing": "Email me about new creations",
+    "orders": "Orders",
+    "order": "Order",
+    "date": "Date",
+    "payment": "Payment",
+    "fulfillment": "Fulfillment",
+    "total": "Total",
+    "no_orders": "You haven't placed any orders yet.",
+    "details": "Account details",
+    "addresses": "Addresses",
+    "default": "Default",
+    "edit": "Edit",
+    "save": "Save",
+    "delete_confirm": "Delete this address?",
+    "add_address": "Add address",
+    "set_default": "Set as default address",
+    "activate": "Activate account",
+    "decline": "Decline invitation",
+    "cancelled": "Cancelled",
+    "product": "Product",
+    "billing": "Billing address",
+    "shipping": "Shipping address",
+    "track": "Track shipment",
+    "address_fields": {
+      "first_name": "First name",
+      "last_name": "Last name",
+      "company": "Company",
+      "address1": "Address",
+      "address2": "Apartment, suite, etc.",
+      "city": "City",
+      "zip": "PIN code",
+      "phone": "Phone",
+      "country": "Country / region",
+      "province": "State"
+    }
+  }
+}

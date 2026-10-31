@@ -1,0 +1,53 @@
+{%- assign s = section.settings -%}
+<section class="pyramid section--ivory" aria-labelledby="Pyramid-{{ section.id }}">
+  <div class="container container--wide pyramid__grid">
+    <header class="pyramid__head" data-reveal>
+      <p class="eyebrow">{{ s.eyebrow }}</p>
+      <h2 class="display pyramid__title" id="Pyramid-{{ section.id }}">{{ s.title }}</h2>
+      {%- if s.text != blank -%}<p class="pyramid__intro">{{ s.text }}</p>{%- endif -%}
+    </header>
+    <ol class="pyramid__tiers" role="list">
+      {%- for block in section.blocks -%}
+        <li class="tier tier--{{ forloop.index }}" {{ block.shopify_attributes }} data-reveal>
+          <figure class="tier__media">
+            {%- if block.settings.image != blank -%}
+              {{ block.settings.image | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '500, 1000', sizes: '(min-width: 990px) 30vw, 90vw', alt: block.settings.image.alt | escape }}
+            {%- else -%}
+              <span class="tier__glyph" aria-hidden="true">{% render 'icon', name: block.settings.icon, size: 56 %}</span>
+            {%- endif -%}
+          </figure>
+          <div class="tier__copy">
+            <span class="tier__time">{{ block.settings.timing }}</span>
+            <h3 class="tier__title">{{ block.settings.title }}</h3>
+            <p>{{ block.settings.text }}</p>
+          </div>
+        </li>
+      {%- endfor -%}
+    </ol>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "The art of fragrance",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The art of fragrance" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "A fragrance unfolds in three acts" },
+    { "type": "text", "id": "text", "label": "Text", "default": "Every perfume is composed in layers that reveal themselves over time, from the first spray to the final trace on skin." }
+  ],
+  "blocks": [
+    { "type": "tier", "name": "Note tier", "settings": [
+      { "type": "image_picker", "id": "image", "label": "Ingredient image" },
+      { "type": "select", "id": "icon", "label": "Icon (if no image)", "options": [ { "value": "note-top", "label": "Top" }, { "value": "note-heart", "label": "Heart" }, { "value": "note-base", "label": "Base" } ], "default": "note-top" },
+      { "type": "text", "id": "timing", "label": "Timing label", "default": "The first impression" },
+      { "type": "text", "id": "title", "label": "Title", "default": "Top notes" },
+      { "type": "textarea", "id": "text", "label": "Text" }
+    ] }
+  ],
+  "max_blocks": 3,
+  "presets": [ { "name": "The art of fragrance", "blocks": [
+    { "type": "tier", "settings": { "icon": "note-top", "timing": "The first impression", "title": "Top notes", "text": "The bright opening you notice the moment you spray. Light and lively, they lift away first." } },
+    { "type": "tier", "settings": { "icon": "note-heart", "timing": "The character", "title": "Heart notes", "text": "As the opening settles, the heart emerges — the true personality of the fragrance." } },
+    { "type": "tier", "settings": { "icon": "note-base", "timing": "The lasting memory", "title": "Base notes", "text": "Deep and slow to fade, the base gives a fragrance its depth and the trail that stays with you." } }
+  ] } ]
+}
+{% endschema %}

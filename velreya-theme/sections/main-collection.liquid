@@ -1,0 +1,43 @@
+{%- paginate collection.products by section.settings.per_page -%}
+<section class="plp section--ivory">
+  <header class="plp__hero section--dark">
+    {%- if collection.image and section.settings.show_image -%}
+      <div class="plp__hero-media" aria-hidden="true">{% render 'image', image: collection.image, sizes: '100vw', loading: 'eager' %}</div>
+    {%- endif -%}
+    <div class="container container--wide plp__hero-copy">
+      <p class="eyebrow eyebrow--gold">{{ 'collections.fragrance_count' | t: count: collection.products_count }}</p>
+      <h1 class="display plp__title">{{ collection.title }}</h1>
+      {%- if collection.description != blank -%}<div class="plp__desc rte">{{ collection.description }}</div>{%- endif -%}
+    </div>
+  </header>
+
+  <div class="container container--wide" id="ProductGridContainer" data-results-container>
+    {%- assign current_sort = collection.sort_by | default: collection.default_sort_by -%}
+    {% render 'facets', results: collection, sort_by: current_sort, url: collection.url %}
+
+    {%- if collection.products.size > 0 -%}
+      <ul class="grid grid--{{ section.settings.columns }} plp__grid" role="list">
+        {%- for product in collection.products -%}
+          <li>{% render 'product-card', product: product, sizes: '(min-width: 990px) 30vw, 48vw' %}</li>
+        {%- endfor -%}
+      </ul>
+      {% render 'pagination', paginate: paginate %}
+    {%- else -%}
+      <div class="empty-state">
+        <p>{{ 'collections.empty' | t }}</p>
+        <a class="btn btn--outline" href="{{ collection.url }}">{{ 'collections.clear_all' | t }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+{%- endpaginate -%}
+{% schema %}
+{
+  "name": "Collection grid",
+  "settings": [
+    { "type": "range", "id": "per_page", "label": "Products per page", "min": 8, "max": 36, "step": 4, "default": 24 },
+    { "type": "select", "id": "columns", "label": "Desktop columns", "options": [ { "value": "3", "label": "3" }, { "value": "4", "label": "4" } ], "default": "3" },
+    { "type": "checkbox", "id": "show_image", "label": "Show collection image", "default": true }
+  ]
+}
+{% endschema %}

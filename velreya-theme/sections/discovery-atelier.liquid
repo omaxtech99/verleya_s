@@ -1,0 +1,69 @@
+{%- liquid
+  assign s = section.settings
+  assign bundle = settings.discovery_product
+  assign needed = settings.discovery_count | default: 4
+  assign discovery_col = settings.discovery_collection | default: collections.all
+-%}
+<section class="discovery section--dark" id="discovery-{{ section.id }}">
+  <div class="discovery__light" aria-hidden="true"></div>
+  <div class="container container--wide discovery__grid">
+    <div class="discovery__copy" data-reveal>
+      <p class="eyebrow eyebrow--gold">{{ s.eyebrow }}</p>
+      <h2 class="discovery__title display">{{ s.title }}</h2>
+      {%- if s.text != blank -%}<div class="discovery__text">{{ s.text }}</div>{%- endif -%}
+      <p class="discovery__meta">{{ s.label }}</p>
+      {%- if bundle != blank -%}
+        <div class="discovery__price">
+          {% render 'price', product: bundle %}
+          <span>{{ 'discovery.for_set' | t: count: needed, size: settings.mini_option_value }}</span>
+        </div>
+        <button type="button" class="btn btn--gold" data-discovery-open aria-haspopup="dialog">{{ s.cta }}</button>
+        <noscript><a class="btn btn--gold" href="{{ settings.discovery_page.url | default: bundle.url }}">{{ s.cta }}</a></noscript>
+      {%- elsif request.design_mode -%}
+        <p class="editor-hint">{{ 'discovery.setup_hint' | t }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="discovery__visual" data-reveal>
+      {%- if s.image != blank -%}
+        {% render 'image', image: s.image, sizes: '(min-width: 990px) 55vw, 100vw', class: 'discovery__img' %}
+      {%- else -%}
+        <div class="discovery__minis" aria-hidden="true">
+          {%- assign shown = 0 -%}
+          {%- for p in discovery_col.products limit: needed -%}
+            {%- assign mini_img = p.metafields.velreya.mini_image.value | default: p.featured_image -%}
+            {%- assign tint = p.metafields.velreya.atmosphere.value | default: settings.color_bronze -%}
+            <figure class="discovery__mini" style="--i: {{ forloop.index0 }}; --tint: {{ tint }};">
+              {%- if mini_img -%}
+                {{ mini_img | image_url: width: 600 | image_tag: loading: 'lazy', alt: '', widths: '300, 600', sizes: '(min-width: 990px) 12vw, 22vw' }}
+              {%- else -%}
+                {% render 'bottle-placeholder', variant: 'mini', tint: tint, label: p.title %}
+              {%- endif -%}
+              <figcaption>{{ p.title }}</figcaption>
+            </figure>
+            {%- assign shown = shown | plus: 1 -%}
+          {%- endfor -%}
+          {%- if shown == 0 -%}
+            {%- for i in (1..4) -%}<figure class="discovery__mini" style="--i: {{ forloop.index0 }};">{% render 'bottle-placeholder', variant: 'mini' %}</figure>{%- endfor -%}
+          {%- endif -%}
+        </div>
+        <div class="discovery__plinth" aria-hidden="true"></div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Discovery atelier",
+  "settings": [
+    { "type": "paragraph", "content": "Products and price come from Theme settings → Discovery set." },
+    { "type": "image_picker", "id": "image", "label": "Four-bottle arrangement photograph", "info": "Optional. Without it, the miniature image of each of the first four fragrances is arranged automatically." },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The Discovery Atelier" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Four scents. One signature experience." },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Discover VELREYA your way. Curate a personal collection of four 12ml fragrances from our twelve distinctive creations.</p>" },
+    { "type": "text", "id": "label", "label": "Supporting label", "default": "Choose any 4 · 12ml each" },
+    { "type": "text", "id": "cta", "label": "Button", "default": "Build your discovery set" }
+  ],
+  "presets": [ { "name": "Discovery atelier" } ]
+}
+{% endschema %}

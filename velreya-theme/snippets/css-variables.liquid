@@ -1,0 +1,31 @@
+{%- liquid
+  assign body_medium = settings.font_body | font_modify: 'weight', '500'
+  assign body_bold = settings.font_body | font_modify: 'weight', 'bold'
+  assign heading_italic = settings.font_heading | font_modify: 'style', 'italic'
+-%}
+<style>
+  {{ settings.font_heading | font_face: font_display: 'swap' }}
+  {{ settings.font_body | font_face: font_display: 'swap' }}
+  {%- if heading_italic %}{{ heading_italic | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if body_medium %}{{ body_medium | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if body_bold %}{{ body_bold | font_face: font_display: 'swap' }}{% endif -%}
+
+  :root {
+    --c-black: {{ settings.color_black }};
+    --c-charcoal: {{ settings.color_charcoal }};
+    --c-ivory: {{ settings.color_ivory }};
+    --c-gold: {{ settings.color_gold }};
+    --c-bronze: {{ settings.color_bronze }};
+    --c-neutral: {{ settings.color_neutral }};
+    --c-black-rgb: {{ settings.color_black.red }}, {{ settings.color_black.green }}, {{ settings.color_black.blue }};
+    --c-ivory-rgb: {{ settings.color_ivory.red }}, {{ settings.color_ivory.green }}, {{ settings.color_ivory.blue }};
+    --c-gold-rgb: {{ settings.color_gold.red }}, {{ settings.color_gold.green }}, {{ settings.color_gold.blue }};
+
+    --font-heading: {{ settings.font_heading.family }}, {{ settings.font_heading.fallback_families }};
+    --font-heading-weight: {{ settings.font_heading.weight }};
+    --font-body: {{ settings.font_body.family }}, {{ settings.font_body.fallback_families }};
+    --font-body-weight: {{ settings.font_body.weight }};
+    --heading-scale: {{ settings.heading_scale | divided_by: 100.0 }};
+    --logo-width: {{ settings.logo_width }}px;
+  }
+</style>

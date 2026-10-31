@@ -1,0 +1,23 @@
+{%- layout none -%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ 'gift_card.title' | t }} — {{ shop.name }}</title>
+    {% render 'css-variables' %}
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ content_for_header }}
+  </head>
+  <body class="template-gift-card">
+    <main class="notfound section--dark">
+      <div class="container notfound__inner">
+        <span class="wordmark wordmark--lg">{{ shop.name | upcase }}</span>
+        <h1 class="display notfound__title">{{ gift_card.balance | money }}</h1>
+        {%- if gift_card.expired or gift_card.enabled == false -%}<p class="form-error">{{ 'gift_card.expired' | t }}</p>{%- endif -%}
+        <p class="notfound__text">{{ 'gift_card.code' | t }}: <strong>{{ gift_card.code | format_code }}</strong></p>
+        {%- if gift_card.pass_url -%}<a href="{{ gift_card.pass_url }}" class="btn btn--ghost">Apple Wallet</a>{%- endif -%}
+        <a class="btn btn--ivory" href="{{ shop.url }}">{{ 'gift_card.shop' | t }}</a>
+      </div>
+    </main>
+  </body>
+</html>

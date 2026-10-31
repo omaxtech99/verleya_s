@@ -1,0 +1,36 @@
+{%- comment -%}
+  Editorial product card. Params: product, index, layout ('editorial' | 'grid'), sizes
+{%- endcomment -%}
+{%- liquid
+  assign tint = product.metafields.velreya.atmosphere.value | default: settings.color_bronze
+  assign tint2 = product.metafields.velreya.atmosphere_secondary.value | default: settings.color_charcoal
+  assign size_option = product.options_with_values | where: 'name', 'Size' | first
+  assign card_sizes = sizes | default: '(min-width: 990px) 25vw, 70vw'
+-%}
+<article class="pcard pcard--{{ layout | default: 'grid' }}" style="--tint: {{ tint }}; --tint-2: {{ tint2 }};" data-reveal>
+  <a class="pcard__media" href="{{ product.url }}" aria-label="{{ product.title | escape }}" tabindex="-1">
+    <span class="pcard__glow" aria-hidden="true"></span>
+    {%- if product.featured_media -%}
+      {% render 'image', image: product.featured_media.preview_image, sizes: card_sizes, class: 'pcard__img', alt: product.title %}
+      {%- if product.media[1] -%}
+        {% render 'image', image: product.media[1].preview_image, sizes: card_sizes, class: 'pcard__img pcard__img--alt', alt: '' %}
+      {%- endif -%}
+    {%- else -%}
+      {% render 'bottle-placeholder', tint: tint, label: product.title %}
+    {%- endif -%}
+    {%- unless product.available -%}<span class="badge">{{ 'products.sold_out' | t }}</span>{%- endunless -%}
+  </a>
+  <div class="pcard__body">
+    {%- if index -%}<span class="pcard__index">{{ index | prepend: '0' | slice: -2, 2 }}</span>{%- endif -%}
+    <h3 class="pcard__title"><a href="{{ product.url }}">{{ product.title }}</a></h3>
+    {%- assign character = product.metafields.velreya.character.value -%}
+    {%- if character != blank -%}<p class="pcard__character">{{ character }}</p>{%- endif -%}
+    <div class="pcard__meta">
+      {% render 'price', product: product, show_from: true %}
+      {%- if size_option -%}
+        <span class="pcard__sizes">{{ size_option.values | join: ' · ' }}</span>
+      {%- endif -%}
+    </div>
+    <a class="link-arrow" href="{{ product.url }}">{{ 'products.view_fragrance' | t }}{% render 'icon', name: 'arrow-right', size: 16 %}</a>
+  </div>
+</article>

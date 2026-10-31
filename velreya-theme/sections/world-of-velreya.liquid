@@ -1,0 +1,45 @@
+{%- assign s = section.settings -%}
+<section class="world section--{{ s.scheme }}">
+  <div class="container container--wide world__grid">
+    <figure class="world__main" data-reveal>
+      {%- if s.image_main != blank -%}
+        {% render 'image', image: s.image_main, sizes: '(min-width: 990px) 58vw, 100vw', class: 'world__img' %}
+      {%- else -%}
+        <div class="media-placeholder">{{ 'onboarding.image_hint' | t }}</div>
+      {%- endif -%}
+    </figure>
+    <div class="world__copy" data-reveal>
+      <p class="eyebrow">{{ s.eyebrow }}</p>
+      <h2 class="world__title display">{{ s.title }}</h2>
+      <div class="world__text rte">{{ s.text }}</div>
+      {%- if s.cta != blank and s.link != blank -%}<a class="link-arrow" href="{{ s.link }}">{{ s.cta }}{% render 'icon', name: 'arrow-right', size: 16 %}</a>{%- endif -%}
+    </div>
+    <figure class="world__secondary" data-reveal>
+      {%- if s.image_secondary != blank -%}
+        {% render 'image', image: s.image_secondary, sizes: '(min-width: 990px) 26vw, 60vw', class: 'world__img' %}
+      {%- else -%}
+        <div class="media-placeholder media-placeholder--sm">{{ 'onboarding.image_hint' | t }}</div>
+      {%- endif -%}
+    </figure>
+    {%- if s.quote != blank -%}
+      <blockquote class="world__quote" data-reveal>{{ s.quote }}</blockquote>
+    {%- endif -%}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "World of Velreya",
+  "settings": [
+    { "type": "select", "id": "scheme", "label": "Color scheme", "options": [ { "value": "dark", "label": "Black" }, { "value": "ivory", "label": "Ivory" }, { "value": "charcoal", "label": "Charcoal" } ], "default": "charcoal" },
+    { "type": "image_picker", "id": "image_main", "label": "Main editorial image" },
+    { "type": "image_picker", "id": "image_secondary", "label": "Secondary image" },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The world of Velreya" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "More than a fragrance. A presence." },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>A scent arrives before you do and lingers after you leave. VELREYA is made for that moment — the quiet confidence of being entirely yourself, and the impression it leaves on everyone you meet.</p><p>Wear it as a signature, or change it with your mood. Either way, it is personal.</p>" },
+    { "type": "text", "id": "quote", "label": "Pull quote", "default": "Some impressions never fade." },
+    { "type": "text", "id": "cta", "label": "Link label", "default": "Our story" },
+    { "type": "url", "id": "link", "label": "Link" }
+  ],
+  "presets": [ { "name": "World of Velreya" } ]
+}
+{% endschema %}

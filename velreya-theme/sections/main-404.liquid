@@ -1,0 +1,27 @@
+<section class="notfound section--dark">
+  <div class="notfound__glow" aria-hidden="true"></div>
+  <div class="container notfound__inner">
+    <p class="eyebrow eyebrow--gold">404</p>
+    <h1 class="display notfound__title">{{ section.settings.title }}</h1>
+    <p class="notfound__text">{{ section.settings.text }}</p>
+    <div class="notfound__ctas">
+      <a class="btn btn--ivory" href="{{ routes.all_products_collection_url }}">{{ 'general.explore_fragrances' | t }}</a>
+      <a class="btn btn--ghost" href="{{ routes.root_url }}">{{ 'general.home' | t }}</a>
+    </div>
+    <form action="{{ routes.search_url }}" method="get" role="search" class="notfound__search">
+      <input type="hidden" name="type" value="product">
+      <label class="visually-hidden" for="NotFoundSearch">{{ 'search.placeholder' | t }}</label>
+      <input id="NotFoundSearch" type="search" name="q" placeholder="{{ 'search.placeholder' | t }}">
+      <button type="submit" class="icon-btn" aria-label="{{ 'search.submit' | t }}">{% render 'icon', name: 'search' %}</button>
+    </form>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "404",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "This trail has faded" },
+    { "type": "text", "id": "text", "label": "Text", "default": "The page you were looking for has moved or no longer exists." }
+  ]
+}
+{% endschema %}

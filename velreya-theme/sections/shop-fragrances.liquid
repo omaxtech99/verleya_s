@@ -1,0 +1,59 @@
+{%- liquid
+  assign s = section.settings
+  assign col = s.collection | default: collections.all
+-%}
+<section class="showcase section--ivory" aria-labelledby="Showcase-{{ section.id }}">
+  <div class="container container--wide showcase__head" data-reveal>
+    <div>
+      <p class="eyebrow">{{ s.eyebrow }}</p>
+      <h2 class="showcase__title display" id="Showcase-{{ section.id }}">{{ s.title }}</h2>
+    </div>
+    <div class="showcase__aside">
+      {%- if s.text != blank -%}<p>{{ s.text }}</p>{%- endif -%}
+      <div class="carousel-nav" data-carousel-nav>
+        <button type="button" class="icon-btn icon-btn--ring" data-carousel-prev aria-label="{{ 'general.previous' | t }}">{% render 'icon', name: 'arrow-left' %}</button>
+        <button type="button" class="icon-btn icon-btn--ring" data-carousel-next aria-label="{{ 'general.next' | t }}">{% render 'icon', name: 'arrow-right' %}</button>
+      </div>
+    </div>
+  </div>
+
+  <editorial-carousel class="showcase__track" tabindex="0" aria-label="{{ s.title | escape }}">
+    <ul class="showcase__list" role="list" data-carousel-track>
+      {%- if col != blank and col.products_count > 0 -%}
+        {%- for product in col.products limit: s.limit -%}
+          <li class="showcase__item showcase__item--{{ forloop.index | modulo: 3 }}">
+            {% render 'product-card', product: product, index: forloop.index, layout: 'editorial', sizes: '(min-width: 990px) 28vw, 78vw' %}
+          </li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..4) -%}
+          <li class="showcase__item showcase__item--{{ i | modulo: 3 }}">
+            <article class="pcard pcard--editorial">
+              <div class="pcard__media">{% render 'bottle-placeholder' %}</div>
+              <div class="pcard__body"><h3 class="pcard__title">{{ 'onboarding.product_title' | t }}</h3><p class="pcard__character">{{ 'onboarding.choose_collection' | t }}</p></div>
+            </article>
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+    <div class="showcase__progress" aria-hidden="true"><span data-carousel-progress></span></div>
+  </editorial-carousel>
+
+  <div class="container container--wide showcase__foot">
+    <a class="btn btn--dark" href="{{ col.url | default: routes.all_products_collection_url }}">{{ s.cta }}</a>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Shop the fragrances",
+  "settings": [
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "limit", "label": "Products shown", "min": 4, "max": 12, "step": 1, "default": 12 },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The collection" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Twelve ways to be remembered" },
+    { "type": "text", "id": "text", "label": "Text", "default": "Each VELREYA creation has its own character. Find the one that feels like yours." },
+    { "type": "text", "id": "cta", "label": "Button", "default": "View all fragrances" }
+  ],
+  "presets": [ { "name": "Shop the fragrances" } ]
+}
+{% endschema %}

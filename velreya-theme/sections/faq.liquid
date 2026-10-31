@@ -1,0 +1,41 @@
+{%- assign s = section.settings -%}
+<section class="faq section--{{ s.scheme }}">
+  <div class="container faq__grid">
+    <header class="faq__head" data-reveal>
+      <p class="eyebrow">{{ s.eyebrow }}</p>
+      <h2 class="display faq__title">{{ s.title }}</h2>
+      {%- if s.text != blank -%}<div class="rte">{{ s.text }}</div>{%- endif -%}
+    </header>
+    <div class="faq__list">
+      {%- for block in section.blocks -%}
+        <details class="accordion accordion--lg" {{ block.shopify_attributes }}>
+          <summary>{{ block.settings.question }}{% render 'icon', name: 'plus', size: 16 %}</summary>
+          <div class="accordion__body rte">{{ block.settings.answer }}</div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{%- if section.blocks.size > 0 -%}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{%- for block in section.blocks -%}{"@type":"Question","name":{{ block.settings.question | json }},"acceptedAnswer":{"@type":"Answer","text":{{ block.settings.answer | strip_html | json }}}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]}
+</script>
+{%- endif -%}
+{% schema %}
+{
+  "name": "FAQ",
+  "settings": [
+    { "type": "select", "id": "scheme", "label": "Color scheme", "options": [ { "value": "ivory", "label": "Ivory" }, { "value": "dark", "label": "Black" } ], "default": "ivory" },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "Questions" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Frequently asked" },
+    { "type": "richtext", "id": "text", "label": "Text" }
+  ],
+  "blocks": [
+    { "type": "question", "name": "Question", "settings": [
+      { "type": "text", "id": "question", "label": "Question", "default": "Question" },
+      { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>Answer</p>" }
+    ] }
+  ],
+  "presets": [ { "name": "FAQ" } ]
+}
+{% endschema %}

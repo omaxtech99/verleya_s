@@ -1,0 +1,25 @@
+query CartTransformRunInput {
+  cart {
+    lines {
+      id
+      quantity
+      components: attribute(key: "_components") {
+        value
+      }
+      merchandise {
+        __typename
+        ... on ProductVariant {
+          id
+          product {
+            allowed: metafield(namespace: "velreya", key: "discovery_components") {
+              jsonValue
+            }
+            required: metafield(namespace: "velreya", key: "discovery_count") {
+              jsonValue
+            }
+          }
+        }
+      }
+    }
+  }
+}

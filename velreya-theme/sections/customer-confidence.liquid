@@ -1,0 +1,60 @@
+{%- assign s = section.settings -%}
+<section class="confidence section--{{ s.scheme }}" aria-label="{{ s.title | default: 'Customer care' | escape }}">
+  <div class="container container--wide">
+    {%- if s.title != blank -%}<h2 class="confidence__title">{{ s.title }}</h2>{%- endif -%}
+    <ul class="confidence__list" role="list">
+      {%- for block in section.blocks -%}
+        <li class="confidence__item" {{ block.shopify_attributes }} data-reveal>
+          {% render 'icon', name: block.settings.icon, size: 26 %}
+          <div>
+            <h3>{{ block.settings.title }}</h3>
+            <p>{{ block.settings.text }}</p>
+            {%- liquid
+              assign href = block.settings.link
+              case block.settings.policy
+                when 'shipping'
+                  assign href = shop.shipping_policy.url
+                when 'refund'
+                  assign href = shop.refund_policy.url
+                when 'privacy'
+                  assign href = shop.privacy_policy.url
+                when 'contact'
+                  assign href = shop.contact_information.url | default: block.settings.link
+              endcase
+            -%}
+            {%- if href != blank and block.settings.link_label != blank -%}
+              <a class="link-quiet" href="{{ href }}">{{ block.settings.link_label }}</a>
+            {%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Customer confidence",
+  "settings": [
+    { "type": "paragraph", "content": "Publish only promises that are true for your store. Policy links resolve to the policies set in Settings → Policies." },
+    { "type": "select", "id": "scheme", "label": "Color scheme", "options": [ { "value": "dark", "label": "Black" }, { "value": "ivory", "label": "Ivory" } ], "default": "ivory" },
+    { "type": "text", "id": "title", "label": "Heading" }
+  ],
+  "blocks": [
+    { "type": "item", "name": "Reassurance", "settings": [
+      { "type": "select", "id": "icon", "label": "Icon", "options": [ { "value": "lock", "label": "Lock" }, { "value": "truck", "label": "Delivery" }, { "value": "chat", "label": "Support" }, { "value": "return", "label": "Returns" }, { "value": "shield", "label": "Shield" } ], "default": "lock" },
+      { "type": "text", "id": "title", "label": "Title" },
+      { "type": "textarea", "id": "text", "label": "Text" },
+      { "type": "select", "id": "policy", "label": "Link to policy", "options": [ { "value": "none", "label": "None / custom link" }, { "value": "shipping", "label": "Shipping policy" }, { "value": "refund", "label": "Refund policy" }, { "value": "privacy", "label": "Privacy policy" }, { "value": "contact", "label": "Contact information" } ], "default": "none" },
+      { "type": "url", "id": "link", "label": "Custom link" },
+      { "type": "text", "id": "link_label", "label": "Link label" }
+    ] }
+  ],
+  "max_blocks": 4,
+  "presets": [ { "name": "Customer confidence", "blocks": [
+    { "type": "item", "settings": { "icon": "lock", "title": "Secure checkout", "text": "Payments are processed through Shopify's encrypted checkout." } },
+    { "type": "item", "settings": { "icon": "truck", "title": "Shipping", "text": "Delivery coverage, timelines and charges are listed in our shipping policy.", "policy": "shipping", "link_label": "Shipping policy" } },
+    { "type": "item", "settings": { "icon": "return", "title": "Returns", "text": "Read exactly how returns and refunds work before you order.", "policy": "refund", "link_label": "Refund policy" } },
+    { "type": "item", "settings": { "icon": "chat", "title": "Customer care", "text": "Questions about a fragrance or an order? Write to us.", "link": "/pages/contact", "link_label": "Contact us" } }
+  ] } ]
+}
+{% endschema %}

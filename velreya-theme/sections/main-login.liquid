@@ -1,0 +1,32 @@
+<section class="account section--ivory">
+  <div class="container container--narrow account__card">
+    <div data-login-panel>
+      <h1 class="display account__title">{{ 'customer.log_in' | t }}</h1>
+      {%- form 'customer_login', novalidate: 'novalidate' -%}
+        {%- if form.errors -%}<div class="form-error" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+        <div class="field"><label for="LoginEmail">{{ 'customer.email' | t }}</label><input id="LoginEmail" type="email" name="customer[email]" autocomplete="email" autocapitalize="off" required></div>
+        {%- if form.password_needed -%}
+          <div class="field"><label for="LoginPassword">{{ 'customer.password' | t }}</label><input id="LoginPassword" type="password" name="customer[password]" autocomplete="current-password" required></div>
+          <a class="link-quiet" href="#recover">{{ 'customer.forgot_password' | t }}</a>
+        {%- endif -%}
+        <button type="submit" class="btn btn--dark btn--block">{{ 'customer.sign_in' | t }}</button>
+        <a class="link-quiet" href="{{ routes.account_register_url }}">{{ 'customer.create_account' | t }}</a>
+      {%- endform -%}
+    </div>
+    <div id="recover" class="account__recover">
+      <h2 class="account__subtitle">{{ 'customer.reset_password' | t }}</h2>
+      {%- form 'recover_customer_password' -%}
+        {%- if form.posted_successfully? -%}<p class="form-success" role="status">{{ 'customer.recover_success' | t }}</p>{%- endif -%}
+        {%- if form.errors -%}<div class="form-error" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+        <div class="field"><label for="RecoverEmail">{{ 'customer.email' | t }}</label><input id="RecoverEmail" type="email" name="email" autocomplete="email" required></div>
+        <button type="submit" class="btn btn--outline">{{ 'customer.submit' | t }}</button>
+      {%- endform -%}
+    </div>
+    {%- if shop.checkout.guest_login -%}
+      {%- form 'guest_login' -%}<button type="submit" class="btn btn--ghost">{{ 'customer.guest' | t }}</button>{%- endform -%}
+    {%- endif -%}
+  </div>
+</section>
+{% schema %}
+{ "name": "Login", "settings": [] }
+{% endschema %}

@@ -1,0 +1,25 @@
+{%- comment -%}
+  Real Shopify price. Params: product, variant (optional), show_from (bool)
+{%- endcomment -%}
+{%- liquid
+  assign target = variant | default: product.selected_or_first_available_variant
+  assign on_sale = false
+  if target.compare_at_price > target.price
+    assign on_sale = true
+  endif
+-%}
+<span class="price{% if on_sale %} price--sale{% endif %}">
+  {%- if show_from and product.price_varies and variant == blank -%}
+    <span class="price__from">{{ 'products.from' | t }}</span>
+    <span class="price__current">{{ product.price_min | money }}</span>
+  {%- else -%}
+    <span class="visually-hidden">{{ 'products.price' | t }}</span>
+    <span class="price__current" data-price>{{ target.price | money }}</span>
+    {%- if on_sale -%}
+      <s class="price__compare" data-compare-price><span class="visually-hidden">{{ 'products.regular_price' | t }}</span>{{ target.compare_at_price | money }}</s>
+    {%- endif -%}
+  {%- endif -%}
+  {%- if target.unit_price_measurement -%}
+    <small class="price__unit">{{ target.unit_price | money }}/{{ target.unit_price_measurement.reference_value }}{{ target.unit_price_measurement.reference_unit }}</small>
+  {%- endif -%}
+</span>

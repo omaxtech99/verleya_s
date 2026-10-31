@@ -1,0 +1,64 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "main-0": {
+          "type": "title"
+        },
+        "main-1": {
+          "type": "price"
+        },
+        "main-2": {
+          "type": "buy"
+        },
+        "main-3": {
+          "type": "notes"
+        },
+        "main-4": {
+          "type": "description"
+        },
+        "main-5": {
+          "type": "discovery",
+          "settings": {
+            "text": "Not ready to choose? Try it in miniature in your own discovery set."
+          }
+        },
+        "main-6": {
+          "type": "collapsible",
+          "settings": {
+            "heading": "Shipping & returns",
+            "policy": "shipping"
+          }
+        },
+        "main-7": {
+          "type": "explore",
+          "settings": {
+            "link": "/pages/explore"
+          }
+        }
+      },
+      "block_order": [
+        "main-0",
+        "main-1",
+        "main-2",
+        "main-3",
+        "main-4",
+        "main-5",
+        "main-6",
+        "main-7"
+      ]
+    },
+    "story": {
+      "type": "product-story"
+    },
+    "recs": {
+      "type": "product-recommendations"
+    }
+  },
+  "order": [
+    "main",
+    "story",
+    "recs"
+  ]
+}

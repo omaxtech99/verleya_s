@@ -1,0 +1,63 @@
+{%- assign s = section.settings -%}
+<section class="families section--dark" aria-labelledby="Families-{{ section.id }}">
+  <div class="container container--wide">
+    <header class="families__head" data-reveal>
+      <p class="eyebrow">{{ s.eyebrow }}</p>
+      <h2 class="display families__title" id="Families-{{ section.id }}">{{ s.title }}</h2>
+      {%- if s.text != blank -%}<p class="families__text">{{ s.text }}</p>{%- endif -%}
+    </header>
+    <ul class="families__list" role="list">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign c = block.settings.collection
+          assign label = block.settings.label | default: c.title
+          assign img = block.settings.image | default: c.image
+        -%}
+        <li class="family" style="--tint: {{ block.settings.tint }};" {{ block.shopify_attributes }} data-reveal>
+          <a class="family__link" href="{{ c.url | default: routes.all_products_collection_url }}">
+            <span class="family__media" aria-hidden="true">
+              {%- if img -%}
+                {{ img | image_url: width: 900 | image_tag: loading: 'lazy', alt: '', widths: '450, 900', sizes: '(min-width: 990px) 33vw, 80vw', class: 'family__img' }}
+              {%- endif -%}
+            </span>
+            <span class="family__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <span class="family__body">
+              <span class="family__name">{{ label }}</span>
+              {%- if block.settings.mood != blank -%}<span class="family__mood">{{ block.settings.mood }}</span>{%- endif -%}
+              {%- if c != blank -%}<span class="family__count">{{ 'collections.fragrance_count' | t: count: c.products_count }}</span>{%- endif -%}
+            </span>
+            <span class="family__arrow">{% render 'icon', name: 'arrow-right' %}</span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Find your scent",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "Find your scent" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Begin with a feeling" },
+    { "type": "text", "id": "text", "label": "Text", "default": "Browse by the character you are drawn to." }
+  ],
+  "blocks": [
+    { "type": "family", "name": "Scent family", "settings": [
+      { "type": "collection", "id": "collection", "label": "Collection", "info": "Create a collection per family (for example an automated collection with the tag family:woody)." },
+      { "type": "text", "id": "label", "label": "Label" },
+      { "type": "text", "id": "mood", "label": "Mood line" },
+      { "type": "image_picker", "id": "image", "label": "Image" },
+      { "type": "color", "id": "tint", "label": "Atmosphere", "default": "#8D7458" }
+    ] }
+  ],
+  "max_blocks": 8,
+  "presets": [ { "name": "Find your scent", "blocks": [
+    { "type": "family", "settings": { "label": "Fresh", "mood": "Bright, clean, awake", "tint": "#7C9A92" } },
+    { "type": "family", "settings": { "label": "Floral", "mood": "Soft petals, quiet romance", "tint": "#B9878F" } },
+    { "type": "family", "settings": { "label": "Woody", "mood": "Grounded, composed, assured", "tint": "#7A5C43" } },
+    { "type": "family", "settings": { "label": "Warm & Spicy", "mood": "Glowing, magnetic, bold", "tint": "#9C4F2E" } },
+    { "type": "family", "settings": { "label": "Gourmand", "mood": "Rich, tender, indulgent", "tint": "#8A6542" } },
+    { "type": "family", "settings": { "label": "Soft & Musky", "mood": "Skin-close, intimate, calm", "tint": "#A89C8E" } }
+  ] } ]
+}
+{% endschema %}

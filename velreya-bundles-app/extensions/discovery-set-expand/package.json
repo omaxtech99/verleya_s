@@ -1,0 +1,16 @@
+{
+  "name": "discovery-set-expand",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test",
+    "shopify": "shopify",
+    "typegen": "shopify app function typegen",
+    "build": "shopify app function build"
+  },
+  "dependencies": {
+    "@shopify/shopify_function": "^1.0.0"
+  }
+}

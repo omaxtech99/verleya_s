@@ -1,0 +1,11 @@
+<section class="cart-page section--ivory">
+  <div class="container">
+    <h1 class="display cart-page__title">{{ 'cart.title' | t }}</h1>
+    <div data-cart-page>
+      {% render 'cart-contents', context: 'page' %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{ "name": "Cart", "settings": [] }
+{% endschema %}

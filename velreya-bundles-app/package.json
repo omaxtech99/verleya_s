@@ -1,0 +1,10 @@
+{
+  "name": "velreya-bundles-app",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": ["extensions/*"],
+  "scripts": {
+    "test": "npm --workspaces --if-present test",
+    "deploy": "shopify app deploy"
+  }
+}

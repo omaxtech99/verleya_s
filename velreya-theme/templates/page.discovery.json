@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "builder": {
+      "type": "discovery-builder",
+      "settings": {
+        "context": "page"
+      }
+    }
+  },
+  "order": [
+    "builder"
+  ]
+}

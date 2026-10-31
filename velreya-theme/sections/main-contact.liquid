@@ -1,0 +1,55 @@
+{%- assign s = section.settings -%}
+<section class="contact section--ivory">
+  <div class="container container--wide contact__grid">
+    <div class="contact__intro" data-reveal>
+      <p class="eyebrow">{{ s.eyebrow }}</p>
+      <h1 class="display contact__title">{{ page.title }}</h1>
+      {%- if page.content != blank -%}<div class="rte">{{ page.content }}</div>{%- endif -%}
+      {%- if s.details != blank -%}<div class="contact__details rte">{{ s.details }}</div>{%- endif -%}
+      {% render 'social-icons' %}
+    </div>
+    <div class="contact__form-wrap" data-reveal>
+      {%- form 'contact', id: 'ContactForm', class: 'contact__form' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="form-success" role="status" tabindex="-1" autofocus>{% render 'icon', name: 'check', size: 18 %} {{ 'contact.success' | t }}</p>
+        {%- elsif form.errors -%}
+          <div class="form-error" role="alert" tabindex="-1" autofocus>{{ form.errors | default_errors }}</div>
+        {%- endif -%}
+        <div class="field">
+          <label for="ContactName">{{ 'contact.name' | t }}</label>
+          <input id="ContactName" type="text" name="contact[name]" autocomplete="name" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}">
+        </div>
+        <div class="field">
+          <label for="ContactEmail">{{ 'contact.email' | t }} <span aria-hidden="true">*</span></label>
+          <input id="ContactEmail" type="email" name="contact[email]" autocomplete="email" required aria-required="true" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"{% if form.errors contains 'email' %} aria-invalid="true"{% endif %}>
+        </div>
+        <div class="field">
+          <label for="ContactPhone">{{ 'contact.phone' | t }}</label>
+          <input id="ContactPhone" type="tel" name="contact[phone]" autocomplete="tel" value="{{ form.phone }}">
+        </div>
+        <div class="field">
+          <label for="ContactTopic">{{ 'contact.topic' | t }}</label>
+          <select id="ContactTopic" name="contact[topic]">
+            {%- assign topics = s.topics | split: ',' -%}
+            {%- for t in topics -%}<option>{{ t | strip }}</option>{%- endfor -%}
+          </select>
+        </div>
+        <div class="field">
+          <label for="ContactBody">{{ 'contact.message' | t }} <span aria-hidden="true">*</span></label>
+          <textarea id="ContactBody" name="contact[body]" rows="6" required aria-required="true">{{ form.body }}</textarea>
+        </div>
+        <button type="submit" class="btn btn--dark">{{ 'contact.send' | t }}</button>
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Contact form",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "Customer care" },
+    { "type": "richtext", "id": "details", "label": "Contact details", "info": "Add only real addresses, emails and hours." },
+    { "type": "text", "id": "topics", "label": "Topics (comma separated)", "default": "A fragrance question, An existing order, Discovery set, Something else" }
+  ]
+}
+{% endschema %}
