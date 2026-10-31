@@ -1,0 +1,113 @@
+{%- liquid
+  assign s = section.settings
+  assign cat_col = settings.discovery_collection | default: collections.all
+  assign lines = settings.fragrance_catalog | newline_to_br | replace: '<br>', '<br />' | split: '<br />'
+  assign start = s.start_handle | strip | downcase
+  assign total = 0
+  for line in lines
+    assign f = line | strip | split: '|'
+    if f.size > 8
+      assign total = total | plus: 1
+    endif
+  endfor
+-%}
+<fragrance-discovery class="fdisc" id="fragrance-discovery-{{ section.id }}" data-start="{{ start }}">
+  <div class="fdisc__bg" aria-hidden="true" data-fdisc-bg></div>
+  <div class="container container--wide">
+    <p class="eyebrow" data-reveal>{{ s.eyebrow }}</p>
+    <div class="fdisc__grid">
+      <div class="fdisc__list" role="group" aria-label="{{ 'fragrance.choose' | t }}" data-reveal>
+        {%- assign n = 0 -%}
+        {%- for line in lines -%}
+          {%- assign f = line | strip | split: '|' -%}
+          {%- if f.size < 9 -%}{%- continue -%}{%- endif -%}
+          {%- assign n = n | plus: 1 -%}
+          {%- assign f_handle = f[0] | strip | downcase -%}
+          <button type="button" class="fdisc__pick" data-fdisc-pick="{{ n | minus: 1 }}" data-handle="{{ f_handle }}" aria-pressed="false" style="--accent: {{ f[4] | strip }};">
+            <span class="fdisc__num">{{ n | prepend: '0' | slice: -2, 2 }}</span>
+            <span class="fdisc__pname">{{ f[1] | strip }}</span>
+          </button>
+        {%- endfor -%}
+      </div>
+
+      <div class="fdisc__stage">
+        <div class="fdisc__bottles">
+          {%- assign n = 0 -%}
+          {%- for line in lines -%}
+            {%- assign f = line | strip | split: '|' -%}
+            {%- if f.size < 9 -%}{%- continue -%}{%- endif -%}
+            {%- liquid
+              assign n = n | plus: 1
+              assign f_handle = f[0] | strip | downcase
+              assign fp = nil
+              for p in cat_col.products
+                if p.handle == f_handle
+                  assign fp = p
+                  break
+                endif
+              endfor
+            -%}
+            <div class="fdisc__bottle" data-fdisc-bottle>
+              {%- assign f_name = f[1] | strip -%}{% render 'bottle-image', image: fp.featured_image, sizes: '(min-width: 990px) 24vw, 60vw', alt: f_name %}
+            </div>
+          {%- endfor -%}
+        </div>
+        <div class="fdisc__nav">
+          <button type="button" class="arrow-btn" data-fdisc-prev aria-label="{{ 'fragrance.previous' | t }}">{% render 'icon', name: 'arrow-left', size: 18 %}</button>
+          <span class="eyebrow fdisc__count"><span data-fdisc-current>01</span> / {{ total | prepend: '0' | slice: -2, 2 }}</span>
+          <button type="button" class="arrow-btn" data-fdisc-next aria-label="{{ 'fragrance.next' | t }}">{% render 'icon', name: 'arrow-right', size: 18 %}</button>
+        </div>
+      </div>
+
+      <div class="fdisc__panels" aria-live="polite">
+        {%- assign n = 0 -%}
+        {%- for line in lines -%}
+          {%- assign f = line | strip | split: '|' -%}
+          {%- if f.size < 9 -%}{%- continue -%}{%- endif -%}
+          {%- liquid
+            assign n = n | plus: 1
+            assign f_handle = f[0] | strip | downcase
+            assign fp = nil
+            for p in cat_col.products
+              if p.handle == f_handle
+                assign fp = p
+                break
+              endif
+            endfor
+          -%}
+          <article class="fdisc__panel" data-fdisc-panel data-bg="{{ f[5] | strip }}" data-accent="{{ f[4] | strip }}" style="--accent: {{ f[4] | strip }};"{% unless forloop.first %} hidden{% endunless %}>
+            <p class="eyebrow fdisc__meta"><span>{{ n | prepend: '0' | slice: -2, 2 }}</span> — {{ f[3] | strip }}</p>
+            <h3 class="fdisc__name">{{ f[1] | strip }}</h3>
+            <p class="fdisc__tagline">“{{ f[2] | strip }}”</p>
+            <dl class="fdisc__notes">
+              <div><dt class="eyebrow eyebrow--sm">{{ 'fragrance.top' | t }}</dt><dd>{{ f[6] | strip | replace: ',', ' ·' }}</dd></div>
+              <div><dt class="eyebrow eyebrow--sm">{{ 'fragrance.heart' | t }}</dt><dd>{{ f[7] | strip | replace: ',', ' ·' }}</dd></div>
+              <div><dt class="eyebrow eyebrow--sm">{{ 'fragrance.base' | t }}</dt><dd>{{ f[8] | strip | replace: ',', ' ·' }}</dd></div>
+            </dl>
+            <div class="fdisc__ctas">
+              {%- if fp -%}
+                <a class="btn btn--line" href="{{ fp.url }}">{{ 'products.view_fragrance' | t }}</a>
+                <span class="fdisc__price">{% render 'price', product: fp, show_from: true %}</span>
+              {%- else -%}
+                <a class="btn btn--line" href="{{ cat_col.url | default: routes.all_products_collection_url }}">{{ 'products.view_fragrance' | t }}</a>
+              {%- endif -%}
+              {%- if s.explore_link != blank -%}<a class="lnk" href="{{ s.explore_link }}#{{ f_handle }}">{{ 'explore.enter' | t }}</a>{%- endif -%}
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</fragrance-discovery>
+{% schema %}
+{
+  "name": "Fragrance discovery",
+  "settings": [
+    { "type": "paragraph", "content": "Fragrances come from Theme settings → Fragrance catalog. Prices and links come from the matching Shopify products." },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The Fragrance Discovery" },
+    { "type": "text", "id": "start_handle", "label": "Start on fragrance (handle)", "default": "velour" },
+    { "type": "url", "id": "explore_link", "label": "Explore page", "info": "For example /pages/explore" }
+  ],
+  "presets": [ { "name": "Fragrance discovery" } ]
+}
+{% endschema %}

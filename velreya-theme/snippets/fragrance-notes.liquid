@@ -35,6 +35,46 @@
       {%- endif -%}
     {%- endfor -%}
   </dl>
-{%- elsif request.design_mode -%}
-  <p class="editor-hint">{{ 'fragrance.notes_missing_hint' | t }}</p>
+{%- else -%}
+  {%- liquid
+    assign cat_entry = nil
+    assign key = product.handle | downcase
+    assign cat_lines = settings.fragrance_catalog | newline_to_br | replace: '<br>', '<br />' | split: '<br />'
+    for l in cat_lines
+      assign parts = l | strip | split: '|'
+      if parts.size > 8
+        assign h = parts[0] | strip | downcase
+        if h == key
+          assign cat_entry = parts
+          break
+        endif
+      endif
+    endfor
+  -%}
+  {%- if cat_entry -%}
+    <dl class="notes notes--{{ style | default: 'stacked' }}">
+      {%- for t in tiers -%}
+        {%- liquid
+          case t
+            when 'top'
+              assign list = cat_entry[6] | split: ','
+            when 'heart'
+              assign list = cat_entry[7] | split: ','
+            else
+              assign list = cat_entry[8] | split: ','
+          endcase
+          assign icon_name = 'note-' | append: t
+          assign label_key = 'fragrance.' | append: t
+        -%}
+        <div class="notes__tier">
+          <dt class="notes__label">{% render 'icon', name: icon_name, size: 18 %}<span>{{ label_key | t }}</span></dt>
+          <dd class="notes__list">
+            {%- for n in list -%}<span>{{ n | strip }}</span>{%- unless forloop.last -%}<i aria-hidden="true">·</i>{%- endunless -%}{%- endfor -%}
+          </dd>
+        </div>
+      {%- endfor -%}
+    </dl>
+  {%- elsif request.design_mode -%}
+    <p class="editor-hint">{{ 'fragrance.notes_missing_hint' | t }}</p>
+  {%- endif -%}
 {%- endif -%}

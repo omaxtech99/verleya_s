@@ -1,45 +1,39 @@
 {%- assign s = section.settings -%}
-<section class="world section--{{ s.scheme }}">
-  <div class="container container--wide world__grid">
-    <figure class="world__main" data-reveal>
-      {%- if s.image_main != blank -%}
-        {% render 'image', image: s.image_main, sizes: '(min-width: 990px) 58vw, 100vw', class: 'world__img' %}
-      {%- else -%}
-        <div class="media-placeholder">{{ 'onboarding.image_hint' | t }}</div>
-      {%- endif -%}
-    </figure>
-    <div class="world__copy" data-reveal>
-      <p class="eyebrow">{{ s.eyebrow }}</p>
-      <h2 class="world__title display">{{ s.title }}</h2>
-      <div class="world__text rte">{{ s.text }}</div>
-      {%- if s.cta != blank and s.link != blank -%}<a class="link-arrow" href="{{ s.link }}">{{ s.cta }}{% render 'icon', name: 'arrow-right', size: 16 %}</a>{%- endif -%}
+<section class="statement section--{{ s.scheme }}">
+  <div class="container container--wide statement__grid">
+    <div class="statement__copy">
+      <p class="eyebrow" data-reveal>{{ s.eyebrow }}</p>
+      <h2 class="display display--break statement__title" data-reveal>{{ s.title }}</h2>
+      <span class="hairline" data-reveal aria-hidden="true"></span>
+      <div class="statement__text" data-reveal>{{ s.text }}</div>
+      {%- if s.cta != blank and s.link != blank -%}<a class="lnk" href="{{ s.link }}" data-reveal>{{ s.cta }}</a>{%- endif -%}
     </div>
-    <figure class="world__secondary" data-reveal>
-      {%- if s.image_secondary != blank -%}
-        {% render 'image', image: s.image_secondary, sizes: '(min-width: 990px) 26vw, 60vw', class: 'world__img' %}
-      {%- else -%}
-        <div class="media-placeholder media-placeholder--sm">{{ 'onboarding.image_hint' | t }}</div>
-      {%- endif -%}
+    <figure class="statement__media" data-reveal>
+      <span class="statement__frame" aria-hidden="true"></span>
+      <span class="statement__inner" data-parallax="0.05">
+        {%- if s.image != blank -%}
+          {% render 'image', image: s.image, sizes: '(min-width: 990px) 36vw, 90vw', class: 'statement__img' %}
+        {%- else -%}
+          {% render 'bottle-image', sizes: '(min-width: 990px) 30vw, 70vw', class: 'statement__bottle' %}
+        {%- endif -%}
+      </span>
+      {%- if s.caption != blank -%}<figcaption class="eyebrow">{{ s.caption }}</figcaption>{%- endif -%}
     </figure>
-    {%- if s.quote != blank -%}
-      <blockquote class="world__quote" data-reveal>{{ s.quote }}</blockquote>
-    {%- endif -%}
   </div>
 </section>
 {% schema %}
 {
-  "name": "World of Velreya",
+  "name": "Statement",
   "settings": [
-    { "type": "select", "id": "scheme", "label": "Color scheme", "options": [ { "value": "dark", "label": "Black" }, { "value": "ivory", "label": "Ivory" }, { "value": "charcoal", "label": "Charcoal" } ], "default": "charcoal" },
-    { "type": "image_picker", "id": "image_main", "label": "Main editorial image" },
-    { "type": "image_picker", "id": "image_secondary", "label": "Secondary image" },
-    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The world of Velreya" },
-    { "type": "text", "id": "title", "label": "Heading", "default": "More than a fragrance. A presence." },
-    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>A scent arrives before you do and lingers after you leave. VELREYA is made for that moment — the quiet confidence of being entirely yourself, and the impression it leaves on everyone you meet.</p><p>Wear it as a signature, or change it with your mood. Either way, it is personal.</p>" },
-    { "type": "text", "id": "quote", "label": "Pull quote", "default": "Some impressions never fade." },
-    { "type": "text", "id": "cta", "label": "Link label", "default": "Our story" },
+    { "type": "select", "id": "scheme", "label": "Color scheme", "options": [ { "value": "dark", "label": "Black" }, { "value": "charcoal", "label": "Charcoal" }, { "value": "ivory", "label": "Ivory" } ], "default": "dark" },
+    { "type": "image_picker", "id": "image", "label": "Campaign image", "info": "Defaults to the VELREYA bottle." },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The House" },
+    { "type": "inline_richtext", "id": "title", "label": "Heading", "default": "Fragrance is an art. <em>Presence is its expression.</em>" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Fragrance is invisible, but its presence can be remembered. Twelve fragrances, each with a personality of its own, drawn together as one collection.</p>" },
+    { "type": "text", "id": "caption", "label": "Image caption" },
+    { "type": "text", "id": "cta", "label": "Link label" },
     { "type": "url", "id": "link", "label": "Link" }
   ],
-  "presets": [ { "name": "World of Velreya" } ]
+  "presets": [ { "name": "Statement" } ]
 }
 {% endschema %}

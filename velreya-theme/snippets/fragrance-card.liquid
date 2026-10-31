@@ -1,0 +1,25 @@
+{%- comment -%}
+  Card for one catalog fragrance. Params: f (catalog fields array), fp (Shopify product or nil), index, fallback_url
+{%- endcomment -%}
+{%- liquid
+  assign url = fp.url | default: fallback_url
+  assign size_option = fp.options_with_values | where: 'name', 'Size' | first
+-%}
+<article class="fcard" style="--accent: {{ f[4] | strip }}; --atmos: {{ f[5] | strip }};" data-reveal>
+  <a class="fcard__media" href="{{ url }}" tabindex="-1" aria-hidden="true">
+    <span class="fcard__glow"></span>
+    {% render 'bottle-image', image: fp.featured_image, sizes: '(min-width: 990px) 22vw, 70vw', class: 'fcard__img', alt: '' %}
+    {%- if fp and fp.available == false -%}<span class="badge">{{ 'products.sold_out' | t }}</span>{%- endif -%}
+  </a>
+  <div class="fcard__body">
+    <span class="fcard__num">{{ index | prepend: '0' | slice: -2, 2 }}</span>
+    <h3 class="fcard__name"><a href="{{ url }}">{{ f[1] | strip }}</a></h3>
+    <p class="fcard__tagline">{{ f[2] | strip }}</p>
+    <p class="fcard__character">{{ f[3] | strip }}</p>
+    <div class="fcard__meta">
+      {%- if fp -%}{% render 'price', product: fp, show_from: true %}{%- endif -%}
+      {%- if size_option -%}<span class="fcard__sizes">{{ size_option.values | join: ' · ' }}</span>{%- endif -%}
+    </div>
+    <a class="lnk" href="{{ url }}">{{ 'products.view_fragrance' | t }}</a>
+  </div>
+</article>

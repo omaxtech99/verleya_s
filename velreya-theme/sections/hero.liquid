@@ -1,50 +1,30 @@
 {%- liquid
   assign s = section.settings
+  assign link_product = s.product
 -%}
-<section class="hero section--dark" style="--hero-h: {{ s.height }}svh; --hero-focus: {{ s.focal }};" data-hero>
-  <div class="hero__stage">
-    {%- if s.video != blank -%}
-      <video class="hero__video" muted playsinline loop preload="none" data-hero-video
-        {% if s.image != blank %}poster="{{ s.image | image_url: width: 1800 }}"{% elsif s.video.preview_image %}poster="{{ s.video.preview_image | image_url: width: 1800 }}"{% endif %}
-        aria-hidden="true">
-        {%- for source in s.video.sources -%}
-          {%- if source.mime_type == 'video/mp4' -%}<source data-src="{{ source.url }}" type="video/mp4"{% if source.height %} data-h="{{ source.height }}"{% endif %}>{%- endif -%}
-        {%- endfor -%}
-      </video>
-    {%- endif -%}
-    {%- if s.image != blank -%}
-      <div class="hero__media">
-        {%- assign hero_alt = s.image.alt | default: shop.name -%}
-        {% render 'image', image: s.image, sizes: '100vw', class: 'hero__img', loading: 'eager', alt: hero_alt %}
+<section class="hero2" data-hero>
+  <div class="hero2__glow" aria-hidden="true"></div>
+  <div class="hero2__grain" aria-hidden="true"></div>
+  <div class="container container--wide hero2__grid">
+    <div class="hero2__copy">
+      {%- if s.eyebrow != blank -%}<p class="eyebrow eyebrow--gold hero2__eyebrow" data-hero-line>{{ s.eyebrow }}</p>{%- endif -%}
+      <h1 class="display hero2__title" data-hero-line>{{ s.title }}</h1>
+      {%- if s.subtitle != blank -%}<p class="hero2__sub" data-hero-line>{{ s.subtitle }}</p>{%- endif -%}
+      <div class="hero2__ctas" data-hero-line>
+        {%- if s.cta1_label != blank -%}<a class="btn btn--line" href="{{ s.cta1_link | default: routes.all_products_collection_url }}">{{ s.cta1_label }}</a>{%- endif -%}
+        {%- if s.cta2_label != blank -%}<a class="lnk" href="{{ s.cta2_link | default: '#' }}">{{ s.cta2_label }}</a>{%- endif -%}
       </div>
-      {%- if s.image_mobile != blank -%}
-        <div class="hero__media hero__media--mobile">
-          {% render 'image', image: s.image_mobile, sizes: '100vw', class: 'hero__img', loading: 'eager' %}
-        </div>
-      {%- endif -%}
-    {%- else -%}
-      <div class="hero__media hero__media--placeholder">
-        <div class="hero__rim" aria-hidden="true"></div>
-        {% render 'bottle-placeholder', label: 'VELREYA hero bottle — upload campaign photography' %}
-      </div>
-    {%- endif -%}
-    <div class="hero__veil" aria-hidden="true"></div>
-  </div>
-
-  <div class="hero__content container container--wide hero__content--{{ s.align }}">
-    {%- if s.eyebrow != blank -%}<p class="eyebrow hero__eyebrow">{{ s.eyebrow }}</p>{%- endif -%}
-    <h1 class="hero__title display">{{ s.title }}</h1>
-    {%- if s.subtitle != blank -%}<p class="hero__sub">{{ s.subtitle }}</p>{%- endif -%}
-    <div class="hero__ctas">
-      {%- if s.cta1_label != blank -%}<a class="btn btn--ivory" href="{{ s.cta1_link | default: routes.all_products_collection_url }}">{{ s.cta1_label }}</a>{%- endif -%}
-      {%- if s.cta2_label != blank and s.cta2_link != blank -%}<a class="btn btn--ghost" href="{{ s.cta2_link }}">{{ s.cta2_label }}</a>{%- endif -%}
     </div>
+    <a class="hero2__bottle" href="{{ link_product.url | default: s.bottle_link | default: routes.all_products_collection_url }}" aria-label="{{ s.bottle_caption | escape }}">
+      <span class="hero2__halo" aria-hidden="true"></span>
+      <span class="hero2__float" data-parallax="-0.06">
+        {%- assign hero_img = s.image | default: link_product.featured_image -%}
+        {% render 'bottle-image', image: hero_img, sizes: '(min-width: 990px) 34vw, 80vw', class: 'hero2__img', loading: 'eager', alt: s.bottle_caption %}
+      </span>
+      {%- if s.bottle_caption != blank -%}<span class="lnk hero2__caption">{{ s.bottle_caption }}</span>{%- endif -%}
+    </a>
   </div>
-
-  {%- if s.video != blank -%}
-    <button type="button" class="hero__toggle icon-btn" data-hero-toggle aria-label="{{ 'general.pause_video' | t }}" aria-pressed="false" hidden><span class="vt vt--pause">{% render 'icon', name: 'pause', size: 16 %}</span><span class="vt vt--play">{% render 'icon', name: 'play', size: 16 %}</span></button>
-  {%- endif -%}
-  <span class="hero__scroll" aria-hidden="true"></span>
+  <div class="hero2__scroll" aria-hidden="true"><span></span>{{ 'general.scroll' | t }}</div>
 </section>
 
 {% schema %}
@@ -52,19 +32,17 @@
   "name": "Cinematic hero",
   "class": "section-hero",
   "settings": [
-    { "type": "image_picker", "id": "image", "label": "Campaign image / video poster", "info": "Black-ground product photograph of a VELREYA bottle. 2400px wide recommended." },
-    { "type": "image_picker", "id": "image_mobile", "label": "Mobile image (portrait)" },
-    { "type": "video", "id": "video", "label": "Campaign video (optional)", "info": "Loads after the page is idle, only on fast connections, never when reduced motion is preferred. The image is always the fallback." },
-    { "type": "select", "id": "focal", "label": "Image focus", "options": [ { "value": "50%", "label": "Center" }, { "value": "65%", "label": "Right" }, { "value": "35%", "label": "Left" } ], "default": "65%" },
-    { "type": "range", "id": "height", "label": "Height", "min": 70, "max": 100, "step": 5, "unit": "%", "default": 100 },
-    { "type": "select", "id": "align", "label": "Text position", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ], "default": "left" },
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Maison de parfum" },
-    { "type": "text", "id": "title", "label": "Heading", "default": "The art of being unforgettable" },
+    { "type": "image_picker", "id": "image", "label": "Bottle photograph", "info": "Black-ground bottle photo, portrait. Defaults to the selected product's image, then the VELREYA bottle." },
+    { "type": "product", "id": "product", "label": "Bottle links to product" },
+    { "type": "url", "id": "bottle_link", "label": "Bottle link (if no product)" },
+    { "type": "text", "id": "bottle_caption", "label": "Bottle caption", "default": "Velour — View fragrance" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Twelve Eau de Parfum" },
+    { "type": "inline_richtext", "id": "title", "label": "Heading", "info": "Italic text is shown in champagne gold.", "default": "The art of being <em>unforgettable.</em>" },
     { "type": "text", "id": "subtitle", "label": "Supporting line", "default": "Some impressions never fade." },
-    { "type": "text", "id": "cta1_label", "label": "Primary button", "default": "Explore fragrances" },
+    { "type": "text", "id": "cta1_label", "label": "Primary button", "default": "Discover the collection" },
     { "type": "url", "id": "cta1_link", "label": "Primary link" },
-    { "type": "text", "id": "cta2_label", "label": "Secondary button", "default": "Discover Velreya" },
-    { "type": "url", "id": "cta2_link", "label": "Secondary link" }
+    { "type": "text", "id": "cta2_label", "label": "Secondary link", "default": "Explore VELREYA" },
+    { "type": "url", "id": "cta2_link", "label": "Secondary link URL" }
   ],
   "presets": [ { "name": "Cinematic hero" } ]
 }

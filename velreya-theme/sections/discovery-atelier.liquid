@@ -3,51 +3,46 @@
   assign bundle = settings.discovery_product
   assign needed = settings.discovery_count | default: 4
   assign discovery_col = settings.discovery_collection | default: collections.all
+  assign mini_num = settings.mini_option_value | remove: 'ml' | remove: 'ML' | strip | plus: 0
+  assign total_ml = mini_num | times: needed
 -%}
-<section class="discovery section--dark" id="discovery-{{ section.id }}">
-  <div class="discovery__light" aria-hidden="true"></div>
-  <div class="container container--wide discovery__grid">
-    <div class="discovery__copy" data-reveal>
-      <p class="eyebrow eyebrow--gold">{{ s.eyebrow }}</p>
-      <h2 class="discovery__title display">{{ s.title }}</h2>
-      {%- if s.text != blank -%}<div class="discovery__text">{{ s.text }}</div>{%- endif -%}
-      <p class="discovery__meta">{{ s.label }}</p>
+<section class="atelier-feature" id="discovery-{{ section.id }}">
+  <div class="atelier-feature__light" aria-hidden="true"></div>
+  <div class="container container--wide atelier-feature__grid">
+    <div class="atelier-feature__copy">
+      <p class="eyebrow eyebrow--gold" data-reveal>{{ s.eyebrow }}</p>
+      <h2 class="display display--break atelier-feature__title" data-reveal>{{ s.title }}</h2>
+      {%- if s.text != blank -%}<div class="atelier-feature__text" data-reveal>{{ s.text }}</div>{%- endif -%}
+      <dl class="stats" data-reveal>
+        <div><dt class="stats__num" data-count-to="{{ needed }}">{{ needed }}</dt><dd class="eyebrow">{{ 'discovery.miniatures' | t }}</dd></div>
+        <div><dt class="stats__num">{{ settings.mini_option_value }}</dt><dd class="eyebrow">{{ 'discovery.each' | t }}</dd></div>
+        {%- if mini_num > 0 -%}<div><dt class="stats__num"><span data-count-to="{{ total_ml }}">{{ total_ml }}</span>ml</dt><dd class="eyebrow">{{ 'discovery.total' | t }}</dd></div>{%- endif -%}
+      </dl>
+      <div class="atelier-feature__cta" data-reveal>
+        <button type="button" class="btn btn--line" data-discovery-open aria-haspopup="dialog">{{ s.cta }}</button>
+        <span class="eyebrow eyebrow--sm">{{ s.label }}</span>
+      </div>
       {%- if bundle != blank -%}
-        <div class="discovery__price">
-          {% render 'price', product: bundle %}
-          <span>{{ 'discovery.for_set' | t: count: needed, size: settings.mini_option_value }}</span>
-        </div>
-        <button type="button" class="btn btn--gold" data-discovery-open aria-haspopup="dialog">{{ s.cta }}</button>
-        <noscript><a class="btn btn--gold" href="{{ settings.discovery_page.url | default: bundle.url }}">{{ s.cta }}</a></noscript>
+        <p class="atelier-feature__price" data-reveal>{% render 'price', product: bundle %} <span class="eyebrow eyebrow--sm">{{ 'discovery.for_set' | t: count: needed, size: settings.mini_option_value }}</span></p>
       {%- elsif request.design_mode -%}
         <p class="editor-hint">{{ 'discovery.setup_hint' | t }}</p>
       {%- endif -%}
     </div>
 
-    <div class="discovery__visual" data-reveal>
+    <div class="atelier-feature__bottles" aria-hidden="true">
       {%- if s.image != blank -%}
-        {% render 'image', image: s.image, sizes: '(min-width: 990px) 55vw, 100vw', class: 'discovery__img' %}
+        {% render 'image', image: s.image, sizes: '(min-width: 990px) 50vw, 100vw', class: 'atelier-feature__img' %}
       {%- else -%}
-        <div class="discovery__minis" aria-hidden="true">
-          {%- assign shown = 0 -%}
-          {%- for p in discovery_col.products limit: needed -%}
-            {%- assign mini_img = p.metafields.velreya.mini_image.value | default: p.featured_image -%}
-            {%- assign tint = p.metafields.velreya.atmosphere.value | default: settings.color_bronze -%}
-            <figure class="discovery__mini" style="--i: {{ forloop.index0 }}; --tint: {{ tint }};">
-              {%- if mini_img -%}
-                {{ mini_img | image_url: width: 600 | image_tag: loading: 'lazy', alt: '', widths: '300, 600', sizes: '(min-width: 990px) 12vw, 22vw' }}
-              {%- else -%}
-                {% render 'bottle-placeholder', variant: 'mini', tint: tint, label: p.title %}
-              {%- endif -%}
-              <figcaption>{{ p.title }}</figcaption>
-            </figure>
-            {%- assign shown = shown | plus: 1 -%}
-          {%- endfor -%}
-          {%- if shown == 0 -%}
-            {%- for i in (1..4) -%}<figure class="discovery__mini" style="--i: {{ forloop.index0 }};">{% render 'bottle-placeholder', variant: 'mini' %}</figure>{%- endfor -%}
-          {%- endif -%}
-        </div>
-        <div class="discovery__plinth" aria-hidden="true"></div>
+        {%- assign products = discovery_col.products -%}
+        {%- for i in (1..needed) -%}
+          {%- assign idx = forloop.index0 -%}
+          {%- assign mini_img = products[idx].metafields.velreya.mini_image.value | default: products[idx].featured_image -%}
+          <div class="mini-bottle mini-bottle--{{ forloop.index }}" style="--i: {{ forloop.index0 }};" data-reveal>
+            <span class="mini-bottle__float" data-parallax="{% cycle '-0.04', '-0.09', '-0.05', '-0.11' %}">
+              {% render 'bottle-image', image: mini_img, sizes: '(min-width: 990px) 11vw, 22vw', class: 'mini-bottle__img mini-bottle__img--reflect', alt: '' %}
+            </span>
+          </div>
+        {%- endfor -%}
       {%- endif -%}
     </div>
   </div>
@@ -56,12 +51,12 @@
 {
   "name": "Discovery atelier",
   "settings": [
-    { "type": "paragraph", "content": "Products and price come from Theme settings → Discovery set." },
-    { "type": "image_picker", "id": "image", "label": "Four-bottle arrangement photograph", "info": "Optional. Without it, the miniature image of each of the first four fragrances is arranged automatically." },
-    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The Discovery Atelier" },
-    { "type": "text", "id": "title", "label": "Heading", "default": "Four scents. One signature experience." },
-    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Discover VELREYA your way. Curate a personal collection of four 12ml fragrances from our twelve distinctive creations.</p>" },
-    { "type": "text", "id": "label", "label": "Supporting label", "default": "Choose any 4 · 12ml each" },
+    { "type": "paragraph", "content": "Products and the set price come from Theme settings → Discovery set." },
+    { "type": "image_picker", "id": "image", "label": "Four-bottle photograph (optional)", "info": "Without it, four bottles are arranged automatically." },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The VELREYA Discovery Atelier" },
+    { "type": "inline_richtext", "id": "title", "label": "Heading", "default": "Four scents. <em>One signature experience.</em>" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Discover VELREYA, your way. Curate four distinctive fragrances in an intimate 12ml discovery collection.</p>" },
+    { "type": "text", "id": "label", "label": "Supporting label", "default": "Choose 4 fragrances · 12ml each" },
     { "type": "text", "id": "cta", "label": "Button", "default": "Build your discovery set" }
   ],
   "presets": [ { "name": "Discovery atelier" } ]

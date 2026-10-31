@@ -336,90 +336,124 @@
       if (this.ready) return;
       this.ready = true;
       this.needed = parseInt(this.dataset.needed, 10) || 4;
-      this.variantId = Number(this.dataset.variantId);
-      this.bundleAvailable = this.dataset.available === 'true';
-      this.selection = []; // [{id, title, media}]
+      this.variantId = Number(this.dataset.variantId) || 0;
+      this.bundleReady = this.dataset.bundleReady === 'true';
+      this.selection = []; // [{ index, id, title, media, accent, atmos }]
+      this.rows = $$('[data-scent]', this);
+      this.panels = $$('[data-insp-panel]', this);
       this.addBtn = $('[data-add-set]', this);
       this.error = $('[data-error]', this);
-      const slots = $('[data-slots]', this);
-      if (slots) slots.style.setProperty('--needed', this.needed);
+      this.builder = $('[data-atl-builder]', this);
+      this.done = $('[data-atl-done]', this);
       this.addEventListener('click', (e) => {
         const toggle = e.target.closest('[data-scent-toggle]');
         if (toggle) return this.toggle(toggle.closest('[data-scent]'));
+        const inspect = e.target.closest('[data-inspect]');
+        if (inspect) return this.inspect(parseInt(inspect.dataset.inspect, 10));
         const rm = e.target.closest('[data-slot-remove]');
         if (rm) {
           const idx = $$('[data-slot]', this).indexOf(rm.closest('[data-slot]'));
-          if (this.selection[idx]) this.remove(this.selection[idx].id);
+          if (this.selection[idx]) this.remove(this.selection[idx].index);
           return;
         }
-        if (e.target.closest('[data-add-set]')) this.submit();
+        if (e.target.closest('[data-add-set]')) return this.submit();
+        if (e.target.closest('[data-edit-set]')) return this.showBuilder();
+      });
+      this.inspect(0);
+      this.render();
+    }
+    inspect(index) {
+      this.panels.forEach((p, k) => { p.hidden = k !== index; });
+      this.rows.forEach((r) => r.classList.toggle('is-inspected', Number(r.dataset.index) === index));
+    }
+    toggle(row) {
+      if (!row || row.dataset.available !== 'true') return;
+      const index = Number(row.dataset.index);
+      this.inspect(index);
+      if (this.selection.some((x) => x.index === index)) return this.remove(index);
+      if (this.selection.length >= this.needed) { this.flash(S.limitReached); return; }
+      const media = $('[data-scent-media]', row).innerHTML;
+      this.selection.push({
+        index, id: Number(row.dataset.id) || 0, title: row.dataset.title, media,
+        accent: row.style.getPropertyValue('--accent'), atmos: row.style.getPropertyValue('--atmos')
       });
       this.render();
     }
-    toggle(item) {
-      if (!item || item.dataset.available !== 'true') return;
-      const id = Number(item.dataset.id);
-      if (this.selection.some((s) => s.id === id)) return this.remove(id);
-      if (this.selection.length >= this.needed) { this.flash(S.limitReached); return; }
-      this.selection.push({ id, title: item.dataset.title, media: $('[data-scent-media]', item).innerHTML });
-      this.render();
-    }
-    remove(id) {
-      this.selection = this.selection.filter((s) => s.id !== id);
+    remove(index) {
+      this.selection = this.selection.filter((x) => x.index !== index);
       this.render();
     }
     flash(msg) {
+      if (!this.error) return;
       this.error.textContent = msg;
       this.error.hidden = false;
       clearTimeout(this.flashT);
-      this.flashT = setTimeout(() => { this.error.hidden = true; }, 3000);
+      this.flashT = setTimeout(() => { this.error.hidden = true; }, 4500);
     }
     render() {
       const n = this.selection.length;
-      $$('[data-scent]', this).forEach((el) => {
-        const on = this.selection.some((s) => s.id === Number(el.dataset.id));
-        el.classList.toggle('is-selected', on);
-        const btn = $('[data-scent-toggle]', el);
-        if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      const full = n >= this.needed;
+      this.classList.toggle('is-full', full);
+      this.rows.forEach((row) => {
+        const on = this.selection.some((x) => x.index === Number(row.dataset.index));
+        row.classList.toggle('is-selected', on);
+        const btn = $('[data-scent-toggle]', row);
+        if (!btn || row.dataset.available !== 'true') return;
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        btn.textContent = on ? btn.dataset.labelRemove : (full ? btn.dataset.labelFull : btn.dataset.labelSelect);
       });
       $$('[data-slot]', this).forEach((slot, i) => {
         const s = this.selection[i];
         slot.classList.toggle('is-filled', !!s);
-        $('[data-slot-media]', slot).innerHTML = s ? s.media : `<span class="slot__empty">${i + 1}</span>`;
-        $('[data-slot-name]', slot).textContent = s ? s.title : '—';
+        slot.style.setProperty('--accent', s ? s.accent : '');
+        slot.style.setProperty('--atmos', s ? s.atmos : '');
+        $('[data-slot-media]', slot).innerHTML = s ? s.media : '';
+        $('[data-slot-name]', slot).textContent = s ? s.title : '';
         const rm = $('[data-slot-remove]', slot);
         rm.hidden = !s;
         if (s) rm.setAttribute('aria-label', `${S.remove} ${s.title}`);
       });
-      const count = $('[data-count]', this);
-      if (count) count.textContent = n;
-      const bar = $('[data-bar]', this);
-      if (bar) bar.style.width = `${(n / this.needed) * 100}%`;
-      this.classList.toggle('is-full', n >= this.needed);
+      $$('[data-mini-slot]', this).forEach((li, i) => {
+        const s = this.selection[i];
+        li.classList.toggle('is-filled', !!s);
+        li.innerHTML = s ? s.media : '';
+      });
+      $$('[data-count]', this).forEach((c) => { c.textContent = n; });
       if (this.addBtn) {
-        const ready = n === this.needed && this.bundleAvailable;
-        this.addBtn.disabled = !ready;
+        this.addBtn.disabled = n !== this.needed;
         this.addBtn.textContent = n === this.needed ? S.addSet : S.selectFour;
       }
     }
+    showBuilder() {
+      this.done.hidden = true;
+      this.builder.hidden = false;
+    }
+    showDone(chosen) {
+      $('[data-done-list]', this).innerHTML = chosen.map((c) => `<li>${c.media}<span>${c.title}</span></li>`).join('');
+      this.builder.hidden = true;
+      this.done.hidden = false;
+      const title = $('.atl__done-title', this);
+      if (title) title.focus();
+      const scroller = this.closest('.atelier-dialog__inner');
+      if (scroller) scroller.scrollTop = 0;
+    }
     async submit() {
-      if (this.selection.length !== this.needed || !this.bundleAvailable) return;
-      const ids = this.selection.map((s) => s.id);
+      if (this.selection.length !== this.needed) return;
+      const ids = this.selection.map((x) => x.id);
+      if (!this.bundleReady || !this.variantId || ids.some((id) => !id)) return this.flash(S.notReady);
       if (new Set(ids).size !== ids.length) return this.flash(S.cartError);
       const properties = {};
-      this.selection.forEach((s, i) => { properties[`Fragrance ${i + 1}`] = s.title; });
+      this.selection.forEach((x, i) => { properties[`Fragrance ${i + 1}`] = x.title; });
       properties._components = ids.join(',');
       this.addBtn.disabled = true;
       this.addBtn.setAttribute('aria-busy', 'true');
       this.addBtn.textContent = S.adding;
       try {
         await cartAdd([{ id: this.variantId, quantity: 1, properties }]);
-        toast(S.added);
+        const chosen = this.selection.slice();
         this.selection = [];
         this.render();
-        const dialog = this.closest('dialog');
-        if (dialog) dialog.close();
-        openCart();
+        this.showDone(chosen);
       } catch (err) {
         this.flash(err.message);
         this.render();
@@ -456,6 +490,10 @@
   if (dialog) {
     dialog.addEventListener('close', () => document.body.classList.remove('is-locked'));
     dialog.addEventListener('click', (e) => { if (e.target.closest('[data-discovery-close]')) dialog.close(); });
+    dialog.addEventListener('close', () => {
+      const b = $('discovery-builder', dialog);
+      if (b && b.done && !b.done.hidden) b.showBuilder();
+    });
   }
   document.addEventListener('click', (e) => {
     const t = e.target.closest('[data-discovery-open]');
@@ -582,7 +620,7 @@
   /* ---------- Hero ---------- */
   function initHero() {
     $$('[data-hero]').forEach((hero) => {
-      const img = $('.hero__img', hero);
+      const img = $('.hero2__img, .hero__img', hero);
       const ready = () => requestAnimationFrame(() => hero.classList.add('is-ready'));
       if (!img || img.complete) ready(); else { img.addEventListener('load', ready, { once: true }); setTimeout(ready, 1600); }
       const video = $('[data-hero-video]', hero);
@@ -593,6 +631,128 @@
       }
     });
   }
+
+  /* ---------- Scroll-linked motion ----------
+     [data-scroll]   → sets --p (0 when the element enters at the bottom, 1 when it leaves at the top)
+     [data-parallax] → translates by (distance from viewport centre × factor) via --py
+     Only elements near the viewport are updated; disabled for reduced motion. */
+  function initScrollMotion() {
+    if (reduceMotion) return;
+    const targets = new Set();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => { if (en.isIntersecting) targets.add(en.target); else targets.delete(en.target); });
+      queue();
+    }, { rootMargin: '25% 0px 25% 0px' });
+    const observe = (ctx = document) => $$('[data-scroll], [data-parallax]', ctx).forEach((el) => io.observe(el));
+    observe();
+    let ticking = false;
+    function update() {
+      ticking = false;
+      const vh = window.innerHeight;
+      targets.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (el.hasAttribute('data-scroll')) {
+          const p = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
+          el.style.setProperty('--p', p.toFixed(4));
+        }
+        if (el.hasAttribute('data-parallax')) {
+          const f = parseFloat(el.dataset.parallax) || 0;
+          const offset = (r.top + r.height / 2 - vh / 2) * f;
+          el.style.setProperty('--py', `${offset.toFixed(1)}px`);
+        }
+      });
+    }
+    function queue() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue);
+    document.addEventListener('shopify:section:load', (e) => observe(e.target));
+  }
+
+  /* ---------- Count-up numbers ---------- */
+  function initCountUp() {
+    const els = $$('[data-count-to]');
+    if (!els.length || reduceMotion) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        const el = en.target;
+        const to = parseInt(el.dataset.countTo, 10) || 0;
+        const t0 = performance.now();
+        const step = (t) => {
+          const k = Math.min(1, (t - t0) / 1400);
+          el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3)));
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    }, { threshold: 0.6 });
+    els.forEach((el) => io.observe(el));
+  }
+
+  /* ---------- Fragrance discovery (interactive picker) ---------- */
+  customElements.define('fragrance-discovery', class extends HTMLElement {
+    connectedCallback() {
+      this.picks = $$('[data-fdisc-pick]', this);
+      this.panels = $$('[data-fdisc-panel]', this);
+      this.bottles = $$('[data-fdisc-bottle]', this);
+      this.bg = $('[data-fdisc-bg]', this);
+      this.current = $('[data-fdisc-current]', this);
+      const start = this.picks.findIndex((p) => p.dataset.handle === this.dataset.start);
+      this.addEventListener('click', (e) => {
+        const pick = e.target.closest('[data-fdisc-pick]');
+        if (pick) return this.go(parseInt(pick.dataset.fdiscPick, 10));
+        if (e.target.closest('[data-fdisc-prev]')) return this.go(this.i - 1);
+        if (e.target.closest('[data-fdisc-next]')) return this.go(this.i + 1);
+      });
+      this.addEventListener('keydown', (e) => {
+        if (!e.target.closest('[data-fdisc-pick]')) return;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); this.go(this.i + 1, true); }
+        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); this.go(this.i - 1, true); }
+      });
+      this.go(start >= 0 ? start : 0);
+    }
+    go(i, focus) {
+      const n = this.panels.length;
+      if (!n) return;
+      this.i = (i + n) % n;
+      this.picks.forEach((p, k) => p.setAttribute('aria-pressed', k === this.i ? 'true' : 'false'));
+      this.panels.forEach((p, k) => { p.hidden = k !== this.i; });
+      this.bottles.forEach((b, k) => b.classList.toggle('is-active', k === this.i));
+      const panel = this.panels[this.i];
+      if (this.bg) this.style.setProperty('--fd-bg', panel.dataset.bg);
+      if (this.current) this.current.textContent = String(this.i + 1).padStart(2, '0');
+      const pick = this.picks[this.i];
+      if (pick) {
+        if (focus) pick.focus();
+        const list = pick.parentElement;
+        if (list && list.scrollWidth > list.clientWidth) list.scrollTo({ left: pick.offsetLeft - 24, behavior: reduceMotion ? 'auto' : 'smooth' });
+      }
+    }
+  });
+
+  /* ---------- Cursor-following bottle on signature rows ---------- */
+  customElements.define('cursor-preview', class extends HTMLElement {
+    connectedCallback() {
+      this.cursor = $('[data-cursor]', this);
+      if (!this.cursor || !window.matchMedia('(hover: hover)').matches) return;
+      let x = 0; let y = 0; let cx = 0; let cy = 0; let raf = 0;
+      const loop = () => {
+        cx += (x - cx) * 0.16; cy += (y - cy) * 0.16;
+        this.cursor.style.left = `${cx}px`; this.cursor.style.top = `${cy}px`;
+        raf = Math.abs(x - cx) + Math.abs(y - cy) > 0.5 ? requestAnimationFrame(loop) : 0;
+      };
+      this.addEventListener('pointermove', (e) => {
+        const r = this.getBoundingClientRect();
+        x = e.clientX - r.left; y = e.clientY - r.top;
+        if (!this.classList.contains('is-hovering')) { cx = x; cy = y; }
+        const row = e.target.closest('.signature__row');
+        this.classList.toggle('is-hovering', !!row);
+        if (!raf) raf = requestAnimationFrame(loop);
+      });
+      this.addEventListener('pointerleave', () => this.classList.remove('is-hovering'));
+    }
+  });
 
   function initLazyVideos() {
     if (!canAutoplayVideo()) return;
@@ -667,6 +827,8 @@
   function init() {
     observeReveal();
     initHero();
+    initScrollMotion();
+    initCountUp();
     initLazyVideos();
     initGalleryDots();
     initRecover();

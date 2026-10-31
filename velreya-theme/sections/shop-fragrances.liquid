@@ -1,56 +1,60 @@
 {%- liquid
   assign s = section.settings
-  assign col = s.collection | default: collections.all
+  assign col = s.collection | default: settings.discovery_collection | default: collections.all
+  assign lines = settings.fragrance_catalog | newline_to_br | replace: '<br>', '<br />' | split: '<br />'
 -%}
-<section class="showcase section--ivory" aria-labelledby="Showcase-{{ section.id }}">
-  <div class="container container--wide showcase__head" data-reveal>
+<section class="showcase2" aria-labelledby="Showcase-{{ section.id }}">
+  <div class="container container--wide showcase2__head">
     <div>
-      <p class="eyebrow">{{ s.eyebrow }}</p>
-      <h2 class="showcase__title display" id="Showcase-{{ section.id }}">{{ s.title }}</h2>
+      <p class="eyebrow" data-reveal>{{ s.eyebrow }}</p>
+      <h2 class="display showcase2__title" id="Showcase-{{ section.id }}" data-reveal>{{ s.title }}</h2>
     </div>
-    <div class="showcase__aside">
+    <div class="showcase2__aside" data-reveal>
       {%- if s.text != blank -%}<p>{{ s.text }}</p>{%- endif -%}
       <div class="carousel-nav" data-carousel-nav>
-        <button type="button" class="icon-btn icon-btn--ring" data-carousel-prev aria-label="{{ 'general.previous' | t }}">{% render 'icon', name: 'arrow-left' %}</button>
-        <button type="button" class="icon-btn icon-btn--ring" data-carousel-next aria-label="{{ 'general.next' | t }}">{% render 'icon', name: 'arrow-right' %}</button>
+        <button type="button" class="arrow-btn" data-carousel-prev aria-label="{{ 'general.previous' | t }}">{% render 'icon', name: 'arrow-left', size: 18 %}</button>
+        <button type="button" class="arrow-btn" data-carousel-next aria-label="{{ 'general.next' | t }}">{% render 'icon', name: 'arrow-right', size: 18 %}</button>
       </div>
     </div>
   </div>
 
-  <editorial-carousel class="showcase__track" tabindex="0" aria-label="{{ s.title | escape }}">
+  <editorial-carousel class="showcase__track" tabindex="0" aria-label="{{ s.title | strip_html | escape }}">
     <ul class="showcase__list" role="list" data-carousel-track>
-      {%- if col != blank and col.products_count > 0 -%}
-        {%- for product in col.products limit: s.limit -%}
-          <li class="showcase__item showcase__item--{{ forloop.index | modulo: 3 }}">
-            {% render 'product-card', product: product, index: forloop.index, layout: 'editorial', sizes: '(min-width: 990px) 28vw, 78vw' %}
-          </li>
-        {%- endfor -%}
-      {%- else -%}
-        {%- for i in (1..4) -%}
-          <li class="showcase__item showcase__item--{{ i | modulo: 3 }}">
-            <article class="pcard pcard--editorial">
-              <div class="pcard__media">{% render 'bottle-placeholder' %}</div>
-              <div class="pcard__body"><h3 class="pcard__title">{{ 'onboarding.product_title' | t }}</h3><p class="pcard__character">{{ 'onboarding.choose_collection' | t }}</p></div>
-            </article>
-          </li>
-        {%- endfor -%}
-      {%- endif -%}
+      {%- assign n = 0 -%}
+      {%- for line in lines -%}
+        {%- assign f = line | strip | split: '|' -%}
+        {%- if f.size < 9 -%}{%- continue -%}{%- endif -%}
+        {%- liquid
+          assign n = n | plus: 1
+          assign f_handle = f[0] | strip | downcase
+          assign fp = nil
+          for p in col.products
+            if p.handle == f_handle
+              assign fp = p
+              break
+            endif
+          endfor
+        -%}
+        <li class="showcase__item showcase__item--{{ n | modulo: 3 }}">
+          {% render 'fragrance-card', f: f, fp: fp, index: n, fallback_url: col.url %}
+        </li>
+      {%- endfor -%}
     </ul>
     <div class="showcase__progress" aria-hidden="true"><span data-carousel-progress></span></div>
   </editorial-carousel>
 
   <div class="container container--wide showcase__foot">
-    <a class="btn btn--dark" href="{{ col.url | default: routes.all_products_collection_url }}">{{ s.cta }}</a>
+    <a class="btn btn--line" href="{{ col.url | default: routes.all_products_collection_url }}">{{ s.cta }}</a>
   </div>
 </section>
 {% schema %}
 {
   "name": "Shop the fragrances",
   "settings": [
+    { "type": "paragraph", "content": "Shows the Fragrance catalog. Prices and links come from the matching products in this collection." },
     { "type": "collection", "id": "collection", "label": "Collection" },
-    { "type": "range", "id": "limit", "label": "Products shown", "min": 4, "max": 12, "step": 1, "default": 12 },
-    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The collection" },
-    { "type": "text", "id": "title", "label": "Heading", "default": "Twelve ways to be remembered" },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The Collection" },
+    { "type": "inline_richtext", "id": "title", "label": "Heading", "default": "Twelve ways to be <em>remembered.</em>" },
     { "type": "text", "id": "text", "label": "Text", "default": "Each VELREYA creation has its own character. Find the one that feels like yours." },
     { "type": "text", "id": "cta", "label": "Button", "default": "View all fragrances" }
   ],

@@ -10,72 +10,261 @@
   {
     "name": "Brand",
     "settings": [
-      { "type": "image_picker", "id": "logo", "label": "Logo (light, for dark backgrounds)" },
-      { "type": "image_picker", "id": "logo_dark", "label": "Logo (dark, for light backgrounds)" },
-      { "type": "range", "id": "logo_width", "label": "Logo width", "min": 60, "max": 260, "step": 5, "unit": "px", "default": 130 },
-      { "type": "image_picker", "id": "favicon", "label": "Favicon", "info": "32 x 32px .png recommended" },
-      { "type": "text", "id": "brand_tagline", "label": "Brand line", "default": "The art of being unforgettable" }
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo (light, for dark backgrounds)"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo_dark",
+        "label": "Logo (dark, for light backgrounds)"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Logo width",
+        "min": 60,
+        "max": 260,
+        "step": 5,
+        "unit": "px",
+        "default": 130
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "32 x 32px .png recommended"
+      },
+      {
+        "type": "text",
+        "id": "brand_tagline",
+        "label": "Brand line",
+        "default": "The art of being unforgettable"
+      }
     ]
   },
   {
     "name": "Colors",
     "settings": [
-      { "type": "color", "id": "color_black", "label": "Primary black", "default": "#090909" },
-      { "type": "color", "id": "color_charcoal", "label": "Charcoal", "default": "#171717" },
-      { "type": "color", "id": "color_ivory", "label": "Warm ivory", "default": "#F1EBE1" },
-      { "type": "color", "id": "color_gold", "label": "Champagne gold (accent)", "default": "#C5A875" },
-      { "type": "color", "id": "color_bronze", "label": "Muted bronze", "default": "#8D7458" },
-      { "type": "color", "id": "color_neutral", "label": "Soft neutral", "default": "#B7ACA0" }
+      {
+        "type": "color",
+        "id": "color_black",
+        "label": "Primary black",
+        "default": "#090909"
+      },
+      {
+        "type": "color",
+        "id": "color_charcoal",
+        "label": "Charcoal",
+        "default": "#171717"
+      },
+      {
+        "type": "color",
+        "id": "color_ivory",
+        "label": "Warm ivory",
+        "default": "#F1EBE1"
+      },
+      {
+        "type": "color",
+        "id": "color_gold",
+        "label": "Champagne gold (accent)",
+        "default": "#C5A875"
+      },
+      {
+        "type": "color",
+        "id": "color_bronze",
+        "label": "Muted bronze",
+        "default": "#8D7458"
+      },
+      {
+        "type": "color",
+        "id": "color_neutral",
+        "label": "Soft neutral",
+        "default": "#B7ACA0"
+      }
     ]
   },
   {
     "name": "Typography",
     "settings": [
-      { "type": "font_picker", "id": "font_heading", "label": "Editorial serif (headings)", "default": "cormorant_n5" },
-      { "type": "font_picker", "id": "font_body", "label": "Sans-serif (interface and body)", "default": "jost_n4" },
-      { "type": "range", "id": "heading_scale", "label": "Heading scale", "min": 80, "max": 130, "step": 5, "unit": "%", "default": 100 }
+      {
+        "type": "font_picker",
+        "id": "font_heading",
+        "label": "Editorial serif (headings)",
+        "default": "cormorant_n3"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_body",
+        "label": "Sans-serif (interface and body)",
+        "default": "manrope_n4"
+      },
+      {
+        "type": "range",
+        "id": "heading_scale",
+        "label": "Heading scale",
+        "min": 80,
+        "max": 130,
+        "step": 5,
+        "unit": "%",
+        "default": 100
+      }
     ]
   },
   {
     "name": "Motion",
     "settings": [
-      { "type": "checkbox", "id": "enable_reveal", "label": "Cinematic reveal on scroll", "default": true, "info": "Automatically disabled for visitors who prefer reduced motion." }
+      {
+        "type": "checkbox",
+        "id": "enable_reveal",
+        "label": "Cinematic reveal on scroll",
+        "default": true,
+        "info": "Automatically disabled for visitors who prefer reduced motion."
+      }
     ]
   },
   {
     "name": "Cart",
     "settings": [
-      { "type": "select", "id": "cart_type", "label": "Cart type", "options": [ { "value": "drawer", "label": "Drawer" }, { "value": "page", "label": "Page" } ], "default": "drawer" },
-      { "type": "checkbox", "id": "cart_show_note", "label": "Enable order note", "default": true },
-      { "type": "inline_richtext", "id": "cart_reassurance", "label": "Cart reassurance line", "default": "Taxes and shipping calculated at checkout." }
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Cart type",
+        "options": [
+          {
+            "value": "drawer",
+            "label": "Drawer"
+          },
+          {
+            "value": "page",
+            "label": "Page"
+          }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_note",
+        "label": "Enable order note",
+        "default": true
+      },
+      {
+        "type": "inline_richtext",
+        "id": "cart_reassurance",
+        "label": "Cart reassurance line",
+        "default": "Taxes and shipping calculated at checkout."
+      }
     ]
   },
   {
     "name": "Discovery set",
     "settings": [
-      { "type": "paragraph", "content": "Configure the 4 × 12ml discovery set. Full product and bundle setup: shopify/README.md in the project repository." },
-      { "type": "product", "id": "discovery_product", "label": "Discovery set product", "info": "The product whose variant price is the bundle price." },
-      { "type": "collection", "id": "discovery_collection", "label": "Fragrances available in the set", "info": "Usually your collection of the twelve fragrances." },
-      { "type": "text", "id": "mini_option_value", "label": "Miniature size option value", "default": "12ml", "info": "Each fragrance must have a variant with this option value (for example Size: 12ml)." },
-      { "type": "range", "id": "discovery_count", "label": "Fragrances per set", "min": 2, "max": 6, "step": 1, "default": 4 },
-      { "type": "page", "id": "discovery_page", "label": "Discovery set page (fallback link)" }
+      {
+        "type": "paragraph",
+        "content": "Configure the 4 × 12ml discovery set. Full product and bundle setup: shopify/README.md in the project repository."
+      },
+      {
+        "type": "product",
+        "id": "discovery_product",
+        "label": "Discovery set product",
+        "info": "The product whose variant price is the bundle price."
+      },
+      {
+        "type": "collection",
+        "id": "discovery_collection",
+        "label": "Fragrances available in the set",
+        "info": "Usually your collection of the twelve fragrances."
+      },
+      {
+        "type": "text",
+        "id": "mini_option_value",
+        "label": "Miniature size option value",
+        "default": "12ml",
+        "info": "Each fragrance must have a variant with this option value (for example Size: 12ml)."
+      },
+      {
+        "type": "range",
+        "id": "discovery_count",
+        "label": "Fragrances per set",
+        "min": 2,
+        "max": 6,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "page",
+        "id": "discovery_page",
+        "label": "Discovery set page (fallback link)"
+      }
+    ]
+  },
+  {
+    "name": "Fragrance catalog",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "The official VELREYA fragrances. One per line: handle | Name | Tagline | Character | Accent color | Atmosphere color | Top notes | Heart notes | Base notes. The handle must match the product handle in Shopify (for example nova → /products/nova). Prices, stock and 12ml variants always come from the Shopify product; product metafields override these notes if set."
+      },
+      {
+        "type": "textarea",
+        "id": "fragrance_catalog",
+        "label": "Fragrances",
+        "default": "nova | NOVA | Make your presence known. | Vibrant, fruity, woody, confident | #C5A875 | #14110a | Bergamot, Grapefruit, Pink Pepper | Pineapple, Jasmine, Blackcurrant | Birch, Oakmoss, Musk, Ambergris\nazure | AZURE | Beyond the horizon. | Fresh, marine, aromatic, clean | #7FA6D1 | #0a1624 | Marine Accord, Bergamot, Lemon | Lavender, Juniper, Rosemary | Ambroxan, Cedarwood, White Musk\nsolara | SOLARA | Chase the light. | Radiant, citrus, fresh, energizing | #E3A64F | #241606 | Mandarin, Orange, Bergamot | Neroli, Ginger, Orange Blossom | Ambroxan, Musk, Cedarwood\nblanc | BLANC | The beauty of restraint. | Elegant, spiced, floral, woody | #D9CBB0 | #1f1c17 | Saffron, Cardamom | White Rose, Oud Accord | Sandalwood, Amber, White Musk\nrouge | ROUGE | Leave a lasting impression. | Rich, floral, mysterious, sensual | #D98A98 | #2a0a12 | Turkish Rose, Raspberry | Damask Rose, Incense | Oud, Patchouli, Amber\nember | EMBER | Where warmth becomes desire. | Warm, spicy, smoky, intense | #D9824A | #2a1206 | Cinnamon, Saffron | Tobacco Leaf, Labdanum | Vanilla, Amber, Oud, Guaiac Wood\ncuir | CUIR | Defined by character. | Leather, aromatic, woody, sophisticated | #C49A72 | #1f130d | Cardamom, Bergamot | Leather, Geranium, Vetiver | Patchouli, Amberwood, Musk\nterra | TERRA | Rooted in elegance. | Earthy, woody, grounded, fresh | #8FB08A | #0d1a10 | Grapefruit, Black Pepper | Haitian Vetiver, Cedarwood | Oakmoss, Patchouli, Amber\nvelour | VELOUR | An invitation to indulge. | Creamy, nutty, soft, gourmand | #B5C79F | #161c10 | Pistachio, Almond, Hazelnut | Vanilla Orchid, Heliotrope | Tonka Bean, Sandalwood, Musk\nambre | AMBRE | Wrapped in warmth. | Sweet, amber, warm, enveloping | #E0A838 | #271b07 | Vanilla, Pear | Benzoin, Jasmine Sambac | Amber, Tonka Bean, Patchouli\nlumi | LUMI | Beautifully luminous. | Luminous, fruity, white floral, musky | #EBD5D0 | #221a1a | Pear, Bergamot | Jasmine Sambac, Tuberose, Lily | White Musk, Sandalwood, Vanilla\naura | AURA | Your invisible signature. | Soft, refined, musky, modern | #A9A2CC | #15131f | Bergamot, Pink Pepper | Iris, Cashmere Musk | White Musk, Ambroxan, Cedarwood"
+      },
+      {
+        "type": "image_picker",
+        "id": "default_bottle",
+        "label": "Default bottle photograph",
+        "info": "Shown for fragrances that have no product image yet. Defaults to the VELREYA Velour bottle."
+      }
     ]
   },
   {
     "name": "Social media",
     "settings": [
-      { "type": "text", "id": "social_instagram", "label": "Instagram URL" },
-      { "type": "text", "id": "social_facebook", "label": "Facebook URL" },
-      { "type": "text", "id": "social_youtube", "label": "YouTube URL" },
-      { "type": "text", "id": "social_pinterest", "label": "Pinterest URL" },
-      { "type": "text", "id": "social_x", "label": "X URL" },
-      { "type": "text", "id": "social_whatsapp", "label": "WhatsApp URL", "info": "For example https://wa.me/91XXXXXXXXXX" }
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook URL"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube",
+        "label": "YouTube URL"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest",
+        "label": "Pinterest URL"
+      },
+      {
+        "type": "text",
+        "id": "social_x",
+        "label": "X URL"
+      },
+      {
+        "type": "text",
+        "id": "social_whatsapp",
+        "label": "WhatsApp URL",
+        "info": "For example https://wa.me/91XXXXXXXXXX"
+      }
     ]
   },
   {
     "name": "Search",
     "settings": [
-      { "type": "checkbox", "id": "predictive_search", "label": "Enable predictive search", "default": true }
+      {
+        "type": "checkbox",
+        "id": "predictive_search",
+        "label": "Enable predictive search",
+        "default": true
+      }
     ]
   }
 ]

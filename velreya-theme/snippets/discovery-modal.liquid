@@ -1,9 +1,7 @@
 {%- comment -%} Fullscreen atelier dialog. Contents are lazy-loaded from sections/discovery-builder on first open. {%- endcomment -%}
-{%- if settings.discovery_product != blank -%}
-  <dialog class="atelier-dialog" id="DiscoveryDialog" aria-labelledby="AtelierTitle-modal" data-discovery-dialog>
-    <button type="button" class="icon-btn atelier-dialog__close" data-discovery-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
-    <div class="atelier-dialog__inner" data-discovery-target>
-      <div class="loader" aria-label="{{ 'general.loading' | t }}"><span></span></div>
-    </div>
-  </dialog>
-{%- endif -%}
+<dialog class="atelier-dialog" id="DiscoveryDialog" aria-labelledby="AtelierTitle-modal" data-discovery-dialog>
+  <div class="atelier-dialog__inner" data-discovery-target>
+    <button type="button" class="arrow-btn atelier-dialog__close" data-discovery-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close', size: 18 %}</button>
+    <div class="loader" aria-label="{{ 'general.loading' | t }}"><span></span></div>
+  </div>
+</dialog>

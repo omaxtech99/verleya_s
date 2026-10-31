@@ -1,11 +1,11 @@
 {%- comment -%}
-  Build-your-own discovery set. Data comes entirely from Shopify:
-  - settings.discovery_product: the bundle (parent) product. Its variant price IS the set price.
-  - settings.discovery_collection: the fragrances offered.
-  - settings.mini_option_value: the option value identifying each fragrance's miniature variant (e.g. "12ml").
-  The selection is added as ONE line (the parent variant) carrying the chosen component variant IDs.
-  The Cart Transform function in /shopify/velreya-bundles-app expands it into the real 12ml
-  component variants at the parent's price, so inventory and order components are correct.
+  VELREYA Discovery Atelier — build-your-own set of N × 12ml.
+  Fragrance data: Theme settings → Fragrance catalog (official names and notes).
+  Commerce data:  the matching Shopify product (by handle) in the discovery collection, and its
+                  variant whose option value equals settings.mini_option_value (e.g. "12ml").
+  Price:          the discovery set product's variant price (Theme settings → Discovery set).
+  Cart:           ONE line (the set variant) with the chosen 12ml variant IDs in `_components`;
+                  the Cart Transform function expands it into the exact components.
   Params: context ('modal' | 'page')
 {%- endcomment -%}
 {%- liquid
@@ -13,26 +13,48 @@
   assign bundle_variant = bundle.selected_or_first_available_variant
   assign needed = settings.discovery_count | default: 4
   assign mini_key = settings.mini_option_value | downcase | remove: ' '
-  assign discovery_col = settings.discovery_collection | default: collections.all
-  assign fragrances = discovery_col.products
+  assign cat_col = settings.discovery_collection | default: collections.all
+  assign lines = settings.fragrance_catalog | newline_to_br | replace: '<br>', '<br />' | split: '<br />'
+  assign bundle_ready = false
+  if bundle != blank and bundle_variant.available
+    assign bundle_ready = true
+  endif
 -%}
-<discovery-builder class="atelier atelier--{{ context }}" data-needed="{{ needed }}" data-variant-id="{{ bundle_variant.id }}" data-available="{{ bundle_variant.available }}">
-  <header class="atelier__head">
-    <p class="eyebrow">{{ 'discovery.eyebrow' | t }}</p>
-    <h2 class="atelier__title" id="AtelierTitle-{{ context }}">{{ 'discovery.modal_title' | t }}</h2>
-    <p class="atelier__sub">{{ 'discovery.modal_sub' | t: count: needed }}</p>
+<discovery-builder class="atl atl--{{ context }}" data-needed="{{ needed }}" data-variant-id="{{ bundle_variant.id }}" data-bundle-ready="{{ bundle_ready }}">
+  <header class="atl__head">
+    <div>
+      <p class="eyebrow eyebrow--gold eyebrow--sm">{{ 'discovery.eyebrow' | t }}</p>
+      <h2 class="atl__title" id="AtelierTitle-{{ context }}">{{ 'discovery.modal_title' | t }}</h2>
+    </div>
+    <div class="atl__head-right">
+      <span class="eyebrow atl__headcount" aria-live="polite"><span data-count>0</span> {{ 'discovery.of_n_selected' | t: count: needed }}</span>
+      {%- if context == 'modal' -%}
+        <button type="button" class="arrow-btn" data-discovery-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close', size: 18 %}</button>
+      {%- endif -%}
+    </div>
   </header>
 
-  {%- if bundle == blank -%}
-    <p class="editor-hint">{{ 'discovery.setup_hint' | t }}</p>
-  {%- else -%}
-    <div class="atelier__grid">
-      <div class="atelier__choices" role="group" aria-labelledby="AtelierTitle-{{ context }}">
-        <ol class="atelier__list" role="list">
-          {%- for p in fragrances limit: 24 -%}
-            {%- liquid
-              assign mini = nil
-              for v in p.variants
+  <div class="atl__builder" data-atl-builder>
+    <div class="atl__body">
+      <div class="atl__rows" role="group" aria-labelledby="AtelierTitle-{{ context }}">
+        <p class="atl__intro">{{ 'discovery.modal_sub' | t: count: needed }}</p>
+        {%- assign n = 0 -%}
+        {%- for line in lines -%}
+          {%- assign f = line | strip | split: '|' -%}
+          {%- if f.size < 9 -%}{%- continue -%}{%- endif -%}
+          {%- liquid
+            assign n = n | plus: 1
+            assign f_handle = f[0] | strip | downcase
+            assign fp = nil
+            for p in cat_col.products
+              if p.handle == f_handle
+                assign fp = p
+                break
+              endif
+            endfor
+            assign mini = nil
+            if fp
+              for v in fp.variants
                 for o in v.options
                   assign ok = o | downcase | remove: ' '
                   if ok == mini_key
@@ -44,68 +66,94 @@
                   break
                 endif
               endfor
-              assign tint = p.metafields.velreya.atmosphere.value | default: settings.color_bronze
-              assign mini_img = p.metafields.velreya.mini_image.value | default: mini.image | default: p.featured_image
-            -%}
-            {%- if mini -%}
-              <li class="scent{% unless mini.available %} is-unavailable{% endunless %}" style="--tint: {{ tint }};" data-scent data-id="{{ mini.id }}" data-title="{{ p.title | escape }}" data-available="{{ mini.available }}">
-                <button type="button" class="scent__pick" aria-pressed="false" data-scent-toggle{% unless mini.available %} disabled aria-disabled="true"{% endunless %}>
-                  <span class="scent__media" data-scent-media>
-                    {%- if mini_img -%}
-                      {{ mini_img | image_url: width: 300 | image_tag: loading: 'lazy', alt: '', widths: '150, 300', sizes: '96px' }}
-                    {%- else -%}
-                      {% render 'bottle-placeholder', variant: 'mini', tint: tint, label: p.title %}
-                    {%- endif -%}
-                  </span>
-                  <span class="scent__text">
-                    <span class="scent__name">{{ p.title }}</span>
-                    {%- assign character = p.metafields.velreya.character.value -%}
-                    {%- if character != blank -%}<span class="scent__character">{{ character }}</span>{%- endif -%}
-                    <span class="scent__status">
-                      {%- if mini.available -%}{{ settings.mini_option_value }}{%- else -%}{{ 'products.sold_out' | t }}{%- endif -%}
-                    </span>
-                  </span>
-                  <span class="scent__check" aria-hidden="true">{% render 'icon', name: 'check', size: 16 %}</span>
-                </button>
-                <details class="scent__notes">
-                  <summary>{{ 'fragrance.view_notes' | t }}<span class="visually-hidden"> — {{ p.title }}</span>{% render 'icon', name: 'chevron-down', size: 14 %}</summary>
-                  {% render 'fragrance-notes', product: p, style: 'stacked' %}
-                </details>
-              </li>
-            {%- endif -%}
-          {%- endfor -%}
-        </ol>
+            endif
+            assign available = true
+            if mini and mini.available == false
+              assign available = false
+            endif
+            assign thumb = fp.metafields.velreya.mini_image.value | default: mini.image | default: fp.featured_image
+          -%}
+          <div class="atl__row{% unless available %} is-unavailable{% endunless %}" style="--accent: {{ f[4] | strip }}; --atmos: {{ f[5] | strip }};"
+            data-scent data-index="{{ n | minus: 1 }}" data-id="{{ mini.id }}" data-title="{{ f[1] | strip | escape }}" data-available="{{ available }}">
+            <span class="atl__thumb" data-scent-media>{% render 'bottle-image', image: thumb, sizes: '120px', alt: '', mask: false %}</span>
+            <button type="button" class="atl__inspect" data-inspect="{{ n | minus: 1 }}" aria-label="{{ 'discovery.view_notes_for' | t: name: f[1] | strip | escape }}">
+              <span class="atl__num">{{ n | prepend: '0' | slice: -2, 2 }}</span>
+              <span class="atl__name">{{ f[1] | strip }}</span>
+              <span class="atl__char">{{ f[3] | strip }}</span>
+              <span class="atl__top">{{ 'fragrance.top_short' | t }}: {{ f[6] | strip }}</span>
+            </button>
+            <button type="button" class="atl__sel" data-scent-toggle aria-pressed="false"{% unless available %} disabled{% endunless %}
+              data-label-select="{{ 'discovery.select' | t }}" data-label-remove="{{ 'discovery.selected_remove' | t }}" data-label-full="{{ 'discovery.set_full' | t }}">
+              {%- if available -%}{{ 'discovery.select' | t }}{%- else -%}{{ 'products.sold_out' | t }}{%- endif -%}
+            </button>
+          </div>
+        {%- endfor -%}
       </div>
 
-      <aside class="atelier__stage" aria-label="{{ 'discovery.your_set' | t }}">
-        <div class="atelier__light" aria-hidden="true"></div>
-        <ol class="atelier__slots" role="list" data-slots>
+      <aside class="atl__side" aria-label="{{ 'discovery.your_set' | t }}">
+        <p class="eyebrow">{{ 'discovery.your_set' | t }}</p>
+        <ol class="atl__slots" role="list" data-slots style="--needed: {{ needed }};">
           {%- for i in (1..needed) -%}
-            <li class="slot" data-slot>
-              <span class="slot__bottle" data-slot-media><span class="slot__empty">{{ i }}</span></span>
-              <span class="slot__name" data-slot-name>{{ 'discovery.empty_slot' | t }}</span>
-              <button type="button" class="slot__remove" data-slot-remove hidden>{{ 'general.remove' | t }}</button>
+            <li class="atl__slot" data-slot>
+              <span class="atl__slot-media" data-slot-media></span>
+              <button type="button" class="atl__slot-x" data-slot-remove hidden>{% render 'icon', name: 'close', size: 14 %}</button>
+              <span class="atl__slot-name" data-slot-name></span>
+              <span class="eyebrow eyebrow--sm atl__slot-n" data-slot-n>{{ i | prepend: '0' | slice: -2, 2 }}</span>
             </li>
           {%- endfor -%}
         </ol>
-        <div class="atelier__summary">
-          <p class="atelier__progress" aria-live="polite">
-            <span data-count>0</span> / {{ needed }} <span>{{ 'discovery.selected' | t }}</span>
-          </p>
-          <div class="atelier__bar" aria-hidden="true"><span data-bar></span></div>
-          <div class="atelier__price">
-            <span class="atelier__price-label">{{ bundle.title }}</span>
-            {% render 'price', product: bundle, variant: bundle_variant %}
-          </div>
-          <button type="button" class="btn btn--gold btn--block" data-add-set disabled>
-            {{ 'discovery.select_n' | t: count: needed }}
-          </button>
-          <p class="atelier__error" role="alert" data-error hidden></p>
-          {%- unless bundle_variant.available -%}
-            <p class="atelier__error">{{ 'discovery.unavailable' | t }}</p>
-          {%- endunless -%}
+
+        <div class="atl__insp" aria-live="polite">
+          {%- assign n = 0 -%}
+          {%- for line in lines -%}
+            {%- assign f = line | strip | split: '|' -%}
+            {%- if f.size < 9 -%}{%- continue -%}{%- endif -%}
+            {%- assign n = n | plus: 1 -%}
+            <div class="atl__insp-panel" data-insp-panel style="--accent: {{ f[4] | strip }};"{% unless forloop.first %} hidden{% endunless %}>
+              <p class="eyebrow eyebrow--sm atl__insp-num">{{ n | prepend: '0' | slice: -2, 2 }} — {{ 'discovery.notes' | t }}</p>
+              <p class="atl__insp-name">{{ f[1] | strip }}</p>
+              <p class="atl__insp-char">{{ f[3] | strip }}</p>
+              <dl class="atl__insp-notes">
+                <dt class="eyebrow eyebrow--sm">{{ 'fragrance.top_short' | t }}</dt><dd>{{ f[6] | strip }}</dd>
+                <dt class="eyebrow eyebrow--sm">{{ 'fragrance.heart_short' | t }}</dt><dd>{{ f[7] | strip }}</dd>
+                <dt class="eyebrow eyebrow--sm">{{ 'fragrance.base_short' | t }}</dt><dd>{{ f[8] | strip }}</dd>
+              </dl>
+            </div>
+          {%- endfor -%}
         </div>
       </aside>
     </div>
-  {%- endif -%}
+
+    <div class="atl__bar">
+      <div class="atl__bar-left">
+        <ol class="atl__minis" role="list" aria-hidden="true">
+          {%- for i in (1..needed) -%}<li data-mini-slot></li>{%- endfor -%}
+        </ol>
+        <div>
+          <p class="eyebrow eyebrow--sm atl__bar-count"><span data-count>0</span>/{{ needed }} · {{ settings.mini_option_value }} {{ 'discovery.each' | t | downcase }}</p>
+          <p class="atl__bar-price">
+            {%- if bundle != blank -%}{% render 'price', product: bundle, variant: bundle_variant %}{%- endif -%}
+          </p>
+        </div>
+      </div>
+      <div class="atl__bar-right">
+        <p class="atl__error" role="alert" data-error hidden></p>
+        <button type="button" class="btn btn--line atl__cta" data-add-set disabled>{{ 'discovery.select_n' | t: count: needed }}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="atl__done" data-atl-done hidden>
+    <span class="atl__done-glow" aria-hidden="true"></span>
+    <p class="eyebrow eyebrow--gold">{{ 'discovery.added_label' | t }}</p>
+    <h3 class="display atl__done-title" tabindex="-1">{{ 'discovery.ready' | t }}</h3>
+    <ol class="atl__done-list" role="list" data-done-list></ol>
+    <div class="atl__done-ctas">
+      <a class="btn btn--gold" href="{{ routes.cart_url }}">{{ 'cart.view_bag' | t }}</a>
+      {%- if context == 'modal' -%}
+        <button type="button" class="btn btn--line" data-discovery-close>{{ 'discovery.continue' | t }}</button>
+      {%- endif -%}
+      <button type="button" class="lnk" data-edit-set>{{ 'discovery.edit_set' | t }}</button>
+    </div>
+  </div>
 </discovery-builder>

@@ -37,17 +37,17 @@
           {{ settings.logo_dark | image_url: width: 520 | image_tag: class: 'logo logo--dark', alt: shop.name, widths: '260, 520', sizes: '260px', loading: 'eager' }}
         {%- endif -%}
       {%- else -%}
-        <span class="wordmark">{{ shop.name | upcase }}</span>
+        <img class="logo logo--asset" src="{{ 'velreya-logo.png' | asset_url }}" width="493" height="303" alt="{{ shop.name }}">
       {%- endif -%}
     </a>
 
     <div class="header__icons">
-      <button type="button" class="icon-btn" data-search-open aria-controls="SearchOverlay" aria-label="{{ 'search.title' | t }}">{% render 'icon', name: 'search' %}</button>
+      <button type="button" class="head-link" data-search-open aria-controls="SearchOverlay">{% render 'icon', name: 'search', size: 18 %}<span>{{ 'search.title' | t }}</span></button>
       {%- if shop.customer_accounts_enabled -%}
-        <a class="icon-btn header__account" href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" aria-label="{% if customer %}{{ 'customer.account' | t }}{% else %}{{ 'customer.log_in' | t }}{% endif %}">{% render 'icon', name: 'account' %}</a>
+        <a class="head-link header__account" href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}">{% render 'icon', name: 'account', size: 18 %}<span>{% if customer %}{{ 'customer.account' | t }}{% else %}{{ 'customer.log_in' | t }}{% endif %}</span></a>
       {%- endif -%}
-      <a class="icon-btn header__cart" href="{{ routes.cart_url }}" data-cart-open aria-label="{{ 'cart.title' | t }}">
-        {% render 'icon', name: 'bag' %}
+      <a class="head-link header__cart" href="{{ routes.cart_url }}" data-cart-open>
+        {% render 'icon', name: 'bag', size: 18 %}<span>{{ 'cart.bag' | t }}</span>
         <span class="header__count" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span>
       </a>
     </div>
@@ -58,7 +58,7 @@
   <div class="drawer__overlay" data-menu-close></div>
   <div class="menu-drawer__panel" role="dialog" aria-modal="true" aria-label="{{ 'general.menu' | t }}" tabindex="-1">
     <div class="drawer__head">
-      <span class="wordmark wordmark--sm">{{ shop.name | upcase }}</span>
+      <img class="logo logo--asset logo--drawer" src="{{ 'velreya-logo.png' | asset_url }}" width="493" height="303" alt="{{ shop.name }}">
       <button type="button" class="icon-btn" data-menu-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
     </div>
     <ul class="menu-drawer__list" role="list">
@@ -78,9 +78,9 @@
       {%- endfor -%}
     </ul>
     <div class="menu-drawer__foot">
-      {%- if settings.discovery_product != blank -%}
-        <button type="button" class="btn btn--outline btn--block" data-discovery-open>{{ 'discovery.cta' | t }}</button>
-      {%- endif -%}
+      
+        <button type="button" class="btn btn--line btn--block" data-discovery-open>{{ 'discovery.cta' | t }}</button>
+      
       {%- if shop.customer_accounts_enabled -%}
         <a class="link-quiet" href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}">{% if customer %}{{ 'customer.account' | t }}{% else %}{{ 'customer.log_in' | t }}{% endif %}</a>
       {%- endif -%}

@@ -104,9 +104,9 @@
       <p class="eyebrow">{{ 'cart.title' | t }}</p>
       <p class="cart-empty__title">{{ 'cart.empty' | t }}</p>
       <a class="btn btn--outline" href="{{ routes.all_products_collection_url }}">{{ 'general.explore_fragrances' | t }}</a>
-      {%- if settings.discovery_product != blank -%}
+      
         <button type="button" class="link-arrow" data-discovery-open>{{ 'discovery.cta' | t }}{% render 'icon', name: 'arrow-right', size: 16 %}</button>
-      {%- endif -%}
+      
     </div>
   {%- endif -%}
 </div>

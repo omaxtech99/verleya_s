@@ -1,14 +1,14 @@
-{%- comment -%} Fetched by the discovery dialog via the Section Rendering API, and usable on the discovery page. {%- endcomment -%}
-<div class="section section--dark atelier-page">
-  <div class="container">
-    {% render 'discovery-builder', context: section.settings.context %}
-  </div>
-</div>
+{%- comment -%} Fetched by the discovery dialog via the Section Rendering API, and used on the discovery page / set product. {%- endcomment -%}
+{%- if section.settings.context == 'page' -%}
+  <div class="atelier-page">{% render 'discovery-builder', context: 'page' %}</div>
+{%- else -%}
+  {% render 'discovery-builder', context: 'modal' %}
+{%- endif -%}
 {% schema %}
 {
   "name": "Discovery set builder",
   "settings": [
-    { "type": "paragraph", "content": "Configure products in Theme settings → Discovery set." },
+    { "type": "paragraph", "content": "Configure products in Theme settings → Discovery set and Fragrance catalog." },
     { "type": "select", "id": "context", "label": "Layout", "options": [ { "value": "modal", "label": "Dialog" }, { "value": "page", "label": "Page" } ], "default": "modal" }
   ],
   "presets": [ { "name": "Discovery set builder", "settings": { "context": "page" } } ]

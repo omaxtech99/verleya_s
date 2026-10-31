@@ -16,7 +16,8 @@
     "previous": "Previous",
     "pagination": "Pagination",
     "pause_video": "Pause video",
-    "play_video": "Play video"
+    "play_video": "Play video",
+    "scroll": "Scroll"
   },
   "products": {
     "add_to_bag": "Add to bag",
@@ -30,7 +31,8 @@
     "shop_now": "Shop now",
     "explore_fragrance": "Explore fragrance",
     "explore_story": "Explore its story",
-    "gallery": "Product images"
+    "gallery": "Product images",
+    "discover": "Discover {{ name }}"
   },
   "fragrance": {
     "top": "Top notes",
@@ -38,7 +40,13 @@
     "base": "Base notes",
     "pyramid": "The composition",
     "view_notes": "View notes",
-    "notes_missing_hint": "Add the fragrance notes to this product's metafields (velreya.top_notes, velreya.heart_notes, velreya.base_notes)."
+    "notes_missing_hint": "Add the fragrance notes to this product's metafields (velreya.top_notes, velreya.heart_notes, velreya.base_notes).",
+    "top_short": "Top",
+    "heart_short": "Heart",
+    "base_short": "Base",
+    "choose": "Choose a fragrance",
+    "previous": "Previous fragrance",
+    "next": "Next fragrance"
   },
   "discovery": {
     "eyebrow": "The Discovery Atelier",
@@ -67,7 +75,24 @@
     },
     "contents": "Set contents",
     "unavailable": "The discovery set is currently unavailable.",
-    "setup_hint": "Choose the discovery set product and fragrance collection in Theme settings → Discovery set."
+    "setup_hint": "Choose the discovery set product and fragrance collection in Theme settings → Discovery set.",
+    "miniatures": "Miniatures",
+    "each": "Each",
+    "total": "Total",
+    "of_n_selected": {
+      "one": "of {{ count }} selected",
+      "other": "of {{ count }} selected"
+    },
+    "view_notes_for": "View notes for {{ name }}",
+    "select": "Select",
+    "selected_remove": "✓ Selected · Remove",
+    "set_full": "Set is full",
+    "notes": "Notes",
+    "added_label": "Added to your bag",
+    "ready": "Your discovery set is ready.",
+    "continue": "Continue exploring",
+    "edit_set": "Edit set",
+    "not_ready": "These fragrances aren’t set up as products in Shopify yet, so the set can’t be added to the bag. See README section 2."
   },
   "cart": {
     "title": "Your bag",
@@ -83,7 +108,8 @@
     "increase": "Increase quantity for {{ product }}",
     "decrease_generic": "Decrease quantity",
     "increase_generic": "Increase quantity",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "bag": "Bag"
   },
   "collections": {
     "all": "All fragrances",
@@ -121,16 +147,20 @@
   },
   "newsletter": {
     "email": "Email address",
-    "success": "Thank you for subscribing."
+    "success": "Thank you for subscribing.",
+    "your_email": "Your email",
+    "subscribe": "Subscribe"
   },
   "footer": {
     "customer_care": "Customer care",
     "rights": "All rights reserved.",
     "payment_methods": "Payment methods",
-    "country": "Country / region"
+    "country": "Country / region",
+    "nav": "Footer"
   },
   "explore": {
-    "index": "Fragrances"
+    "index": "Fragrances",
+    "enter": "Enter Explore"
   },
   "blog": {
     "back": "Back to the journal"

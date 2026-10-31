@@ -5,13 +5,13 @@
     "footer": {
       "type": "footer",
       "settings": {
+        "show_newsletter": true,
         "show_payment": true
       },
       "blocks": {
         "shop": {
           "type": "menu",
           "settings": {
-            "heading": "Shop",
             "menu": "footer"
           }
         }

@@ -4,20 +4,28 @@
       "type": "hero",
       "settings": {
         "cta1_link": "/collections/all",
-        "cta2_link": "/pages/our-story"
+        "cta2_link": "/pages/explore",
+        "bottle_link": "/products/velour"
+      }
+    },
+    "statement": {
+      "type": "world-of-velreya",
+      "settings": {
+        "link": "/pages/our-story",
+        "cta": "Our story"
       }
     },
     "atelier": {
       "type": "discovery-atelier"
     },
+    "discovery": {
+      "type": "fragrance-discovery",
+      "settings": {
+        "explore_link": "/pages/explore"
+      }
+    },
     "showcase": {
       "type": "shop-fragrances"
-    },
-    "world": {
-      "type": "world-of-velreya",
-      "settings": {
-        "link": "/pages/our-story"
-      }
     },
     "spotlight": {
       "type": "featured-fragrance",
@@ -25,103 +33,100 @@
         "explore_link": "/pages/explore"
       }
     },
-    "families": {
+    "composition": {
+      "type": "art-of-fragrance",
+      "blocks": {
+        "composition-0": {
+          "type": "tier",
+          "settings": {
+            "title": "Top",
+            "timing": "The first impression",
+            "text": "The notes you meet in the opening moments, bright and immediate."
+          }
+        },
+        "composition-1": {
+          "type": "tier",
+          "settings": {
+            "title": "Heart",
+            "timing": "The character",
+            "text": "What emerges as the opening settles and the fragrance shows its personality."
+          }
+        },
+        "composition-2": {
+          "type": "tier",
+          "settings": {
+            "title": "Base",
+            "timing": "The foundation",
+            "text": "The deeper notes that give the fragrance its depth and its memory."
+          }
+        }
+      },
+      "block_order": [
+        "composition-0",
+        "composition-1",
+        "composition-2"
+      ]
+    },
+    "signature": {
       "type": "find-your-scent",
       "blocks": {
-        "families-0": {
+        "signature-0": {
           "type": "family",
           "settings": {
             "label": "Fresh",
-            "mood": "Bright, clean, awake",
-            "tint": "#7C9A92"
+            "handles": "azure, solara"
           }
         },
-        "families-1": {
+        "signature-1": {
           "type": "family",
           "settings": {
             "label": "Floral",
-            "mood": "Soft petals, quiet romance",
-            "tint": "#B9878F"
+            "handles": "rouge, lumi, blanc"
           }
         },
-        "families-2": {
+        "signature-2": {
           "type": "family",
           "settings": {
             "label": "Woody",
-            "mood": "Grounded, composed, assured",
-            "tint": "#7A5C43"
+            "handles": "terra, cuir"
           }
         },
-        "families-3": {
+        "signature-3": {
           "type": "family",
           "settings": {
             "label": "Warm & Spicy",
-            "mood": "Glowing, magnetic, bold",
-            "tint": "#9C4F2E"
+            "handles": "ember, nova"
           }
         },
-        "families-4": {
+        "signature-4": {
           "type": "family",
           "settings": {
             "label": "Gourmand",
-            "mood": "Rich, tender, indulgent",
-            "tint": "#8A6542"
+            "handles": "velour, ambre"
           }
         },
-        "families-5": {
+        "signature-5": {
           "type": "family",
           "settings": {
             "label": "Soft & Musky",
-            "mood": "Skin-close, intimate, calm",
-            "tint": "#A89C8E"
+            "handles": "aura, lumi"
           }
         }
       },
       "block_order": [
-        "families-0",
-        "families-1",
-        "families-2",
-        "families-3",
-        "families-4",
-        "families-5"
+        "signature-0",
+        "signature-1",
+        "signature-2",
+        "signature-3",
+        "signature-4",
+        "signature-5"
       ]
     },
-    "pyramid": {
-      "type": "art-of-fragrance",
-      "blocks": {
-        "pyramid-0": {
-          "type": "tier",
-          "settings": {
-            "icon": "note-top",
-            "timing": "The first impression",
-            "title": "Top notes",
-            "text": "The bright opening you notice the moment you spray. Light and lively, they lift away first."
-          }
-        },
-        "pyramid-1": {
-          "type": "tier",
-          "settings": {
-            "icon": "note-heart",
-            "timing": "The character",
-            "title": "Heart notes",
-            "text": "As the opening settles, the heart emerges \u2014 the true personality of the fragrance."
-          }
-        },
-        "pyramid-2": {
-          "type": "tier",
-          "settings": {
-            "icon": "note-base",
-            "timing": "The lasting memory",
-            "title": "Base notes",
-            "text": "Deep and slow to fade, the base gives a fragrance its depth and the trail that stays with you."
-          }
-        }
-      },
-      "block_order": [
-        "pyramid-0",
-        "pyramid-1",
-        "pyramid-2"
-      ]
+    "philosophy": {
+      "type": "philosophy",
+      "settings": {
+        "link": "/pages/our-story"
+      }
     },
     "explore": {
       "type": "explore-preview",
@@ -131,16 +136,11 @@
     },
     "confidence": {
       "type": "customer-confidence",
+      "settings": {
+        "scheme": "dark"
+      },
       "blocks": {
         "confidence-0": {
-          "type": "item",
-          "settings": {
-            "icon": "lock",
-            "title": "Secure checkout",
-            "text": "Payments are processed through Shopify's encrypted checkout."
-          }
-        },
-        "confidence-1": {
           "type": "item",
           "settings": {
             "icon": "truck",
@@ -150,7 +150,7 @@
             "link_label": "Shipping policy"
           }
         },
-        "confidence-2": {
+        "confidence-1": {
           "type": "item",
           "settings": {
             "icon": "return",
@@ -160,14 +160,22 @@
             "link_label": "Refund policy"
           }
         },
-        "confidence-3": {
+        "confidence-2": {
           "type": "item",
           "settings": {
             "icon": "chat",
-            "title": "Customer care",
+            "title": "Support",
             "text": "Questions about a fragrance or an order? Write to us.",
             "link": "/pages/contact",
             "link_label": "Contact us"
+          }
+        },
+        "confidence-3": {
+          "type": "item",
+          "settings": {
+            "icon": "lock",
+            "title": "Checkout",
+            "text": "Secure checkout through Shopify."
           }
         }
       },
@@ -177,21 +185,19 @@
         "confidence-2",
         "confidence-3"
       ]
-    },
-    "newsletter": {
-      "type": "newsletter"
     }
   },
   "order": [
     "hero",
+    "statement",
     "atelier",
+    "discovery",
     "showcase",
-    "world",
     "spotlight",
-    "families",
-    "pyramid",
+    "composition",
+    "signature",
+    "philosophy",
     "explore",
-    "confidence",
-    "newsletter"
+    "confidence"
   ]
 }

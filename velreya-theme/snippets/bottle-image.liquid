@@ -1,0 +1,20 @@
+{%- comment -%}
+  VELREYA bottle photograph.
+  Uses `image` (a product/section image) when present, then Theme settings → Default bottle,
+  then the bundled VELREYA bottle (assets/velreya-bottle.webp, a transparent cut-out).
+  Params: image, sizes, class, loading ('lazy'|'eager'), alt, mask (true = feathered edges)
+{%- endcomment -%}
+{%- liquid
+  assign img = image | default: settings.default_bottle
+  assign l = loading | default: 'lazy'
+  assign a = alt | default: 'VELREYA Eau de Parfum bottle' | escape
+  assign cls = 'bottle ' | append: class
+  if mask != false
+    assign cls = cls | append: ' bottle--mask'
+  endif
+-%}
+{%- if img -%}
+  {{ img | image_url: width: 1600 | image_tag: widths: '300, 500, 700, 900, 1200, 1600', sizes: sizes, class: cls, loading: l, alt: a }}
+{%- else -%}
+  <img src="{{ 'velreya-bottle.webp' | asset_url }}" width="840" height="1504" class="{{ cls }}" loading="{{ l }}" decoding="async" alt="{{ a }}">
+{%- endif -%}

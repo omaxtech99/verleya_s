@@ -1,63 +1,80 @@
-{%- assign s = section.settings -%}
-<section class="families section--dark" aria-labelledby="Families-{{ section.id }}">
+{%- liquid
+  assign s = section.settings
+  assign lines = settings.fragrance_catalog | newline_to_br | replace: '<br>', '<br />' | split: '<br />'
+-%}
+<section class="signature" aria-labelledby="Sig-{{ section.id }}">
   <div class="container container--wide">
-    <header class="families__head" data-reveal>
-      <p class="eyebrow">{{ s.eyebrow }}</p>
-      <h2 class="display families__title" id="Families-{{ section.id }}">{{ s.title }}</h2>
-      {%- if s.text != blank -%}<p class="families__text">{{ s.text }}</p>{%- endif -%}
-    </header>
-    <ul class="families__list" role="list">
+    <div class="signature__head">
+      <div>
+        <p class="eyebrow" data-reveal>{{ s.eyebrow }}</p>
+        <h2 class="display signature__title" id="Sig-{{ section.id }}" data-reveal>{{ s.title }}</h2>
+      </div>
+      {%- if s.text != blank -%}<p class="signature__text" data-reveal>{{ s.text }}</p>{%- endif -%}
+    </div>
+    <cursor-preview class="signature__list">
+      <span class="signature__cursor" aria-hidden="true" data-cursor>{% render 'bottle-image', sizes: '180px', alt: '' %}</span>
       {%- for block in section.blocks -%}
         {%- liquid
           assign c = block.settings.collection
-          assign label = block.settings.label | default: c.title
-          assign img = block.settings.image | default: c.image
+          assign wanted = block.settings.handles | downcase | split: ','
+          assign names = ''
+          assign accent = settings.color_gold
+          for w in wanted
+            assign wh = w | strip
+            for line in lines
+              assign f = line | strip | split: '|'
+              if f.size > 8
+                assign h = f[0] | strip | downcase
+                if h == wh
+                  assign nm = f[1] | strip | capitalize
+                  if names == ''
+                    assign names = nm
+                    assign accent = f[4] | strip
+                  else
+                    assign names = names | append: ' · ' | append: nm
+                  endif
+                endif
+              endif
+            endfor
+          endfor
         -%}
-        <li class="family" style="--tint: {{ block.settings.tint }};" {{ block.shopify_attributes }} data-reveal>
-          <a class="family__link" href="{{ c.url | default: routes.all_products_collection_url }}">
-            <span class="family__media" aria-hidden="true">
-              {%- if img -%}
-                {{ img | image_url: width: 900 | image_tag: loading: 'lazy', alt: '', widths: '450, 900', sizes: '(min-width: 990px) 33vw, 80vw', class: 'family__img' }}
-              {%- endif -%}
-            </span>
-            <span class="family__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
-            <span class="family__body">
-              <span class="family__name">{{ label }}</span>
-              {%- if block.settings.mood != blank -%}<span class="family__mood">{{ block.settings.mood }}</span>{%- endif -%}
-              {%- if c != blank -%}<span class="family__count">{{ 'collections.fragrance_count' | t: count: c.products_count }}</span>{%- endif -%}
-            </span>
-            <span class="family__arrow">{% render 'icon', name: 'arrow-right' %}</span>
-          </a>
-        </li>
+        <a class="signature__row" href="{{ c.url | default: routes.all_products_collection_url }}" style="--accent: {{ accent }};" {{ block.shopify_attributes }} data-reveal>
+          <span class="signature__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          <span class="signature__name">{{ block.settings.label | default: c.title }}</span>
+          <span class="eyebrow signature__members">{{ names | default: block.settings.mood }}</span>
+          <span class="signature__arrow" aria-hidden="true">{% render 'icon', name: 'arrow-right', size: 20 %}</span>
+        </a>
       {%- endfor -%}
-    </ul>
+    </cursor-preview>
+    {%- if s.cta != blank -%}<div class="signature__foot" data-reveal><a class="btn btn--line" href="{{ s.link | default: routes.all_products_collection_url }}">{{ s.cta }}</a></div>{%- endif -%}
   </div>
 </section>
 {% schema %}
 {
-  "name": "Find your scent",
+  "name": "Find your signature",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Label", "default": "Find your scent" },
-    { "type": "text", "id": "title", "label": "Heading", "default": "Begin with a feeling" },
-    { "type": "text", "id": "text", "label": "Text", "default": "Browse by the character you are drawn to." }
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "Find Your Signature" },
+    { "type": "inline_richtext", "id": "title", "label": "Heading", "default": "Choose by <em>character.</em>" },
+    { "type": "text", "id": "text", "label": "Text", "default": "Proposed families to guide you. Every fragrance is personal." },
+    { "type": "text", "id": "cta", "label": "Button", "default": "Find your signature" },
+    { "type": "url", "id": "link", "label": "Button link" }
   ],
   "blocks": [
     { "type": "family", "name": "Scent family", "settings": [
-      { "type": "collection", "id": "collection", "label": "Collection", "info": "Create a collection per family (for example an automated collection with the tag family:woody)." },
-      { "type": "text", "id": "label", "label": "Label" },
-      { "type": "text", "id": "mood", "label": "Mood line" },
-      { "type": "image_picker", "id": "image", "label": "Image" },
-      { "type": "color", "id": "tint", "label": "Atmosphere", "default": "#8D7458" }
+      { "type": "text", "id": "label", "label": "Family name" },
+      { "type": "text", "id": "handles", "label": "Fragrances (catalog handles, comma separated)", "info": "For example azure, solara" },
+      { "type": "collection", "id": "collection", "label": "Links to collection", "info": "For example an automated collection of this family." },
+      { "type": "text", "id": "mood", "label": "Fallback description" }
     ] }
   ],
   "max_blocks": 8,
-  "presets": [ { "name": "Find your scent", "blocks": [
-    { "type": "family", "settings": { "label": "Fresh", "mood": "Bright, clean, awake", "tint": "#7C9A92" } },
-    { "type": "family", "settings": { "label": "Floral", "mood": "Soft petals, quiet romance", "tint": "#B9878F" } },
-    { "type": "family", "settings": { "label": "Woody", "mood": "Grounded, composed, assured", "tint": "#7A5C43" } },
-    { "type": "family", "settings": { "label": "Warm & Spicy", "mood": "Glowing, magnetic, bold", "tint": "#9C4F2E" } },
-    { "type": "family", "settings": { "label": "Gourmand", "mood": "Rich, tender, indulgent", "tint": "#8A6542" } },
-    { "type": "family", "settings": { "label": "Soft & Musky", "mood": "Skin-close, intimate, calm", "tint": "#A89C8E" } }
+  "presets": [ { "name": "Find your signature", "blocks": [
+    { "type": "family", "settings": { "label": "Fresh", "handles": "azure, solara" } },
+    { "type": "family", "settings": { "label": "Floral", "handles": "rouge, lumi, blanc" } },
+    { "type": "family", "settings": { "label": "Woody", "handles": "terra, cuir" } },
+    { "type": "family", "settings": { "label": "Warm & Spicy", "handles": "ember, nova" } },
+    { "type": "family", "settings": { "label": "Gourmand", "handles": "velour, ambre" } },
+    { "type": "family", "settings": { "label": "Soft & Musky", "handles": "aura, lumi" } }
   ] } ]
 }
 {% endschema %}

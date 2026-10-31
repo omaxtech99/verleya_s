@@ -6,36 +6,57 @@
 {%- endcomment -%}
 {%- liquid
   assign s = section.settings
-  assign col = s.collection | default: collections.all
+  assign col = s.collection | default: settings.discovery_collection | default: collections.all
 -%}
 <explore-experience class="explore section--dark" data-explore>
   <section class="explore__intro" aria-labelledby="ExploreIntro">
     <div class="explore__intro-glow" aria-hidden="true"></div>
     <div class="container container--wide">
       <p class="eyebrow eyebrow--gold">{{ s.eyebrow }}</p>
-      <h1 class="display explore__intro-title" id="ExploreIntro">{{ s.title }}</h1>
+      <h1 class="display display--break explore__intro-title" id="ExploreIntro">{{ s.title }}</h1>
       {%- if s.text != blank -%}<p class="explore__intro-text">{{ s.text }}</p>{%- endif -%}
       <span class="hero__scroll" aria-hidden="true"></span>
     </div>
   </section>
 
-  {%- if col != blank -%}
+  {%- assign lines = settings.fragrance_catalog | newline_to_br | replace: '<br>', '<br />' | split: '<br />' -%}
+  {%- assign total = 0 -%}
+  {%- for line in lines -%}{%- assign f = line | strip | split: '|' -%}{%- if f.size > 8 -%}{%- assign total = total | plus: 1 -%}{%- endif -%}{%- endfor -%}
+  {%- if total > 0 -%}
     <nav class="explore__index" aria-label="{{ 'explore.index' | t }}">
       <ol role="list">
-        {%- for p in col.products limit: 24 -%}
-          <li><a href="#{{ p.handle }}" data-explore-link="{{ p.handle }}"><span class="explore__index-num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span><span class="explore__index-name">{{ p.title }}</span></a></li>
+        {%- assign n = 0 -%}
+        {%- for line in lines -%}
+          {%- assign f = line | strip | split: '|' -%}
+          {%- if f.size < 9 -%}{%- continue -%}{%- endif -%}
+          {%- assign n = n | plus: 1 -%}
+          {%- assign f_handle = f[0] | strip | downcase -%}
+          <li><a href="#{{ f_handle }}" data-explore-link="{{ f_handle }}"><span class="explore__index-name">{{ f[1] | strip }}</span></a></li>
         {%- endfor -%}
       </ol>
     </nav>
 
-    {%- for p in col.products limit: 24 -%}
+    {%- assign n = 0 -%}
+    {%- for line in lines -%}
+      {%- assign f = line | strip | split: '|' -%}
+      {%- if f.size < 9 -%}{%- continue -%}{%- endif -%}
       {%- liquid
-        assign tint = p.metafields.velreya.atmosphere.value | default: settings.color_bronze
-        assign tint2 = p.metafields.velreya.atmosphere_secondary.value | default: settings.color_black
+        assign n = n | plus: 1
+        assign f_handle = f[0] | strip | downcase
+        assign p = nil
+        for cp in col.products
+          if cp.handle == f_handle
+            assign p = cp
+            break
+          endif
+        endfor
+        assign tint = p.metafields.velreya.atmosphere.value | default: f[4] | strip
+        assign tint2 = p.metafields.velreya.atmosphere_secondary.value | default: f[5] | strip
         assign video = p.metafields.velreya.campaign_video.value
-        assign side = forloop.index | modulo: 2
+        assign side = n | modulo: 2
+        assign story = p.metafields.velreya.story.value
       -%}
-      <section class="xchapter xchapter--{% if side == 0 %}right{% else %}left{% endif %}" id="{{ p.handle }}" style="--tint: {{ tint }}; --tint-2: {{ tint2 }};" data-explore-chapter="{{ p.handle }}" aria-labelledby="X-{{ p.handle }}">
+      <section class="xchapter xchapter--{% if side == 0 %}right{% else %}left{% endif %}" id="{{ f_handle }}" style="--tint: {{ tint }}; --tint-2: {{ tint2 }};" data-explore-chapter="{{ f_handle }}" aria-labelledby="X-{{ f_handle }}">
         <div class="xchapter__atmos" aria-hidden="true"></div>
         {%- if video -%}
           <video class="xchapter__video" muted playsinline loop preload="none" aria-hidden="true" data-chapter-video{% if video.preview_image %} poster="{{ video.preview_image | image_url: width: 1600 }}"{% endif %}>
@@ -43,29 +64,27 @@
           </video>
         {%- endif -%}
         <div class="container container--wide xchapter__grid">
-          <figure class="xchapter__bottle">
-            {%- if p.featured_media -%}
-              {% render 'image', image: p.featured_media.preview_image, sizes: '(min-width: 990px) 40vw, 80vw', alt: p.title %}
-            {%- else -%}
-              {% render 'bottle-placeholder', tint: tint, label: p.title %}
-            {%- endif -%}
+          <figure class="xchapter__bottle" data-parallax="-0.07">
+            {%- assign f_name = f[1] | strip -%}{% render 'bottle-image', image: p.featured_image, sizes: '(min-width: 990px) 34vw, 70vw', alt: f_name %}
           </figure>
           <div class="xchapter__copy">
-            <span class="xchapter__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }} / {{ col.products.size | prepend: '0' | slice: -2, 2 }}</span>
-            <h2 class="display xchapter__title" id="X-{{ p.handle }}">{{ p.title }}</h2>
-            {%- assign character = p.metafields.velreya.character.value -%}
-            {%- if character != blank -%}<p class="xchapter__character">{{ character }}</p>{%- endif -%}
-            {%- assign story = p.metafields.velreya.story.value -%}
+            <span class="xchapter__num">{{ n | prepend: '0' | slice: -2, 2 }} / {{ total | prepend: '0' | slice: -2, 2 }} — {{ f[3] | strip }}</span>
+            <h2 class="xchapter__title" id="X-{{ f_handle }}">{{ f[1] | strip }}</h2>
+            <p class="xchapter__character">“{{ f[2] | strip }}”</p>
             {%- if story != blank -%}<p class="xchapter__story">{{ story | newline_to_br }}</p>{%- endif -%}
-            {% render 'fragrance-notes', product: p, style: 'stacked' %}
+            <dl class="fdisc__notes">
+              <div><dt class="eyebrow eyebrow--sm">{{ 'fragrance.top' | t }}</dt><dd>{{ f[6] | strip | replace: ',', ' ·' }}</dd></div>
+              <div><dt class="eyebrow eyebrow--sm">{{ 'fragrance.heart' | t }}</dt><dd>{{ f[7] | strip | replace: ',', ' ·' }}</dd></div>
+              <div><dt class="eyebrow eyebrow--sm">{{ 'fragrance.base' | t }}</dt><dd>{{ f[8] | strip | replace: ',', ' ·' }}</dd></div>
+            </dl>
             <div class="xchapter__buy">
-              {% render 'price', product: p, show_from: true %}
-              <a class="btn btn--ivory" href="{{ p.url }}">{{ 'products.shop_now' | t }}</a>
+              {%- if p -%}{% render 'price', product: p, show_from: true %}{%- endif -%}
+              <a class="btn btn--line" href="{{ p.url | default: col.url }}">{{ 'products.shop_now' | t }}</a>
             </div>
           </div>
         </div>
         {%- if video -%}
-          <button type="button" class="icon-btn xchapter__toggle" data-chapter-toggle aria-label="{{ 'general.pause_video' | t }}" aria-pressed="false" hidden><span class="vt vt--pause">{% render 'icon', name: 'pause', size: 16 %}</span><span class="vt vt--play">{% render 'icon', name: 'play', size: 16 %}</span></button>
+          <button type="button" class="arrow-btn xchapter__toggle" data-chapter-toggle aria-label="{{ 'general.pause_video' | t }}" aria-pressed="false" hidden><span class="vt vt--pause">{% render 'icon', name: 'pause', size: 16 %}</span><span class="vt vt--play">{% render 'icon', name: 'play', size: 16 %}</span></button>
         {%- endif -%}
       </section>
     {%- endfor -%}
@@ -74,8 +93,8 @@
       <div class="container">
         <h2 class="display">{{ s.outro_title }}</h2>
         <div class="explore__outro-ctas">
-          <a class="btn btn--ivory" href="{{ col.url }}">{{ 'general.explore_fragrances' | t }}</a>
-          {%- if settings.discovery_product != blank -%}<button type="button" class="btn btn--ghost" data-discovery-open>{{ 'discovery.cta' | t }}</button>{%- endif -%}
+          <a class="btn btn--line" href="{{ col.url }}">{{ 'general.explore_fragrances' | t }}</a>
+          <button type="button" class="lnk" data-discovery-open>{{ 'discovery.cta' | t }}</button>
         </div>
       </div>
     </section>
@@ -89,7 +108,7 @@
   "settings": [
     { "type": "collection", "id": "collection", "label": "Fragrances" },
     { "type": "text", "id": "eyebrow", "label": "Label", "default": "Explore" },
-    { "type": "text", "id": "title", "label": "Heading", "default": "Every fragrance has a story." },
+    { "type": "inline_richtext", "id": "title", "label": "Heading", "default": "Every fragrance <em>has a story.</em>" },
     { "type": "text", "id": "text", "label": "Text", "default": "Scroll slowly. Each creation has its own light, its own mood and its own notes." },
     { "type": "text", "id": "outro_title", "label": "Closing heading", "default": "Which story is yours?" }
   ],

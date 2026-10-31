@@ -34,6 +34,7 @@
     {% render 'css-variables' %}
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ 'velreya.css' | asset_url | stylesheet_tag }}
 
     <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
 
@@ -66,6 +67,7 @@
           limitReached: {{ 'discovery.limit_reached' | t: count: settings.discovery_count | json }},
           added: {{ 'discovery.added' | t | json }},
           remove: {{ 'general.remove' | t | json }},
+          notReady: {{ 'discovery.not_ready' | t | json }},
           playVideo: {{ 'general.play_video' | t | json }},
           pauseVideo: {{ 'general.pause_video' | t | json }}
         }

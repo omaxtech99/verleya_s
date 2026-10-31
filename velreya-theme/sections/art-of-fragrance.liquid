@@ -1,24 +1,13 @@
 {%- assign s = section.settings -%}
-<section class="pyramid section--ivory" aria-labelledby="Pyramid-{{ section.id }}">
-  <div class="container container--wide pyramid__grid">
-    <header class="pyramid__head" data-reveal>
-      <p class="eyebrow">{{ s.eyebrow }}</p>
-      <h2 class="display pyramid__title" id="Pyramid-{{ section.id }}">{{ s.title }}</h2>
-      {%- if s.text != blank -%}<p class="pyramid__intro">{{ s.text }}</p>{%- endif -%}
-    </header>
-    <ol class="pyramid__tiers" role="list">
+<section class="compo" aria-labelledby="Compo-{{ section.id }}">
+  <div class="container container--wide">
+    <p class="eyebrow" id="Compo-{{ section.id }}" data-reveal>{{ s.eyebrow }}</p>
+    <ol class="compo__list" role="list">
       {%- for block in section.blocks -%}
-        <li class="tier tier--{{ forloop.index }}" {{ block.shopify_attributes }} data-reveal>
-          <figure class="tier__media">
-            {%- if block.settings.image != blank -%}
-              {{ block.settings.image | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '500, 1000', sizes: '(min-width: 990px) 30vw, 90vw', alt: block.settings.image.alt | escape }}
-            {%- else -%}
-              <span class="tier__glyph" aria-hidden="true">{% render 'icon', name: block.settings.icon, size: 56 %}</span>
-            {%- endif -%}
-          </figure>
-          <div class="tier__copy">
-            <span class="tier__time">{{ block.settings.timing }}</span>
-            <h3 class="tier__title">{{ block.settings.title }}</h3>
+        <li class="compo__row compo__row--{{ forloop.index }}" {{ block.shopify_attributes }} data-scroll>
+          <h3 class="compo__word{% if forloop.index == 2 %} compo__word--gold{% endif %}">{{ block.settings.title }}</h3>
+          <div class="compo__copy">
+            {%- if block.settings.timing != blank -%}<p class="eyebrow eyebrow--gold eyebrow--sm">{{ block.settings.timing }}</p>{%- endif -%}
             <p>{{ block.settings.text }}</p>
           </div>
         </li>
@@ -28,26 +17,22 @@
 </section>
 {% schema %}
 {
-  "name": "The art of fragrance",
+  "name": "The art of composition",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The art of fragrance" },
-    { "type": "text", "id": "title", "label": "Heading", "default": "A fragrance unfolds in three acts" },
-    { "type": "text", "id": "text", "label": "Text", "default": "Every perfume is composed in layers that reveal themselves over time, from the first spray to the final trace on skin." }
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The Art of Composition" }
   ],
   "blocks": [
     { "type": "tier", "name": "Note tier", "settings": [
-      { "type": "image_picker", "id": "image", "label": "Ingredient image" },
-      { "type": "select", "id": "icon", "label": "Icon (if no image)", "options": [ { "value": "note-top", "label": "Top" }, { "value": "note-heart", "label": "Heart" }, { "value": "note-base", "label": "Base" } ], "default": "note-top" },
-      { "type": "text", "id": "timing", "label": "Timing label", "default": "The first impression" },
-      { "type": "text", "id": "title", "label": "Title", "default": "Top notes" },
+      { "type": "text", "id": "title", "label": "Word", "default": "Top" },
+      { "type": "text", "id": "timing", "label": "Small label" },
       { "type": "textarea", "id": "text", "label": "Text" }
     ] }
   ],
   "max_blocks": 3,
-  "presets": [ { "name": "The art of fragrance", "blocks": [
-    { "type": "tier", "settings": { "icon": "note-top", "timing": "The first impression", "title": "Top notes", "text": "The bright opening you notice the moment you spray. Light and lively, they lift away first." } },
-    { "type": "tier", "settings": { "icon": "note-heart", "timing": "The character", "title": "Heart notes", "text": "As the opening settles, the heart emerges — the true personality of the fragrance." } },
-    { "type": "tier", "settings": { "icon": "note-base", "timing": "The lasting memory", "title": "Base notes", "text": "Deep and slow to fade, the base gives a fragrance its depth and the trail that stays with you." } }
+  "presets": [ { "name": "The art of composition", "blocks": [
+    { "type": "tier", "settings": { "title": "Top", "timing": "The first impression", "text": "The notes you meet in the opening moments, bright and immediate." } },
+    { "type": "tier", "settings": { "title": "Heart", "timing": "The character", "text": "What emerges as the opening settles and the fragrance shows its personality." } },
+    { "type": "tier", "settings": { "title": "Base", "timing": "The foundation", "text": "The deeper notes that give the fragrance its depth and its memory." } }
   ] } ]
 }
 {% endschema %}

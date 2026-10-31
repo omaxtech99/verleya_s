@@ -8,7 +8,7 @@ This folder holds the VELREYA luxury fragrance store. It is separate from the Om
 | `velreya-bundles-app/` | Custom Shopify app with a **Cart Transform Function** that makes the 4 × 12ml discovery set a real bundle |
 | `data/fragrances-template.csv` | A blank sheet for the official data of the twelve fragrances (names, notes, colors, story) |
 
-> **Status: this has not been tested against a live store.** Theme Check passes with 0 errors. The function's unit tests pass. Every page was rendered with mock data in a local Liquid harness, and the desktop and mobile screenshots were reviewed. The real checkout, bundle expansion and inventory still need to be verified on a development store. Follow the checklist at the end.
+> **Status: this has not been tested end-to-end against a live store.** Theme Check passes with 0 errors. The function's unit tests pass. Every page was rendered with mock data in a local Liquid harness, and the desktop and mobile screenshots were reviewed. The real checkout, bundle expansion and inventory still need to be verified on a development store. Follow the checklist at the end.
 
 ---
 
@@ -60,6 +60,21 @@ Create these under **Settings → Custom data → Products**. Use namespace `vel
 3. Set `velreya.discovery_components` to the twelve **12ml variants**. Set `velreya.discovery_count` to `4`.
 4. Assign it the theme template **`product.discovery-set`**. This turns its page into the full atelier builder.
 5. Select it in **Theme settings → Discovery set → Discovery set product**.
+
+
+## Fragrance catalogue (official data, included)
+
+The twelve official fragrances are built into **Theme settings → Fragrance catalog**: Nova, Azure, Solara, Blanc, Rouge, Ember, Cuir, Terra, Velour, Ambre, Lumi and Aura. Each one has its tagline, character, accent and atmosphere colours, and top, heart and base notes. There's one fragrance per line:
+
+```
+handle | Name | Tagline | Character | Accent | Atmosphere | Top notes | Heart notes | Base notes
+```
+
+- **Create each Shopify product with the matching handle**: `nova`, `azure`, … `aura`. The theme then pulls in the product's real price, sizes, stock, 12ml variant and photos.
+- Until a product exists, its fragrance still appears in the design (atelier, discovery, carousel, Explore) without a price. The discovery set can't be added to the bag until all four chosen fragrances exist as products.
+- Product metafields (`velreya.top_notes` etc.) override the catalogue notes for that product if you set them.
+- **Default bottle**: `assets/velreya-bottle.webp` is a transparent cut-out of the VELREYA Velour bottle, used wherever a product has no photo yet. Upload a different one in **Theme settings → Fragrance catalog → Default bottle photograph**. Note: the source image carries a small Gemini ✦ AI-generation mark in the lower-right corner, which is left intact. Replace it with final photography before launch.
+- **Logo**: `assets/velreya-logo.png` (VR monogram, transparent) is used until a logo is uploaded in Theme settings → Brand.
 
 ## 3. How the 4 × 12ml discovery set works
 

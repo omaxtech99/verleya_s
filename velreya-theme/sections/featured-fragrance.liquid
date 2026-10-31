@@ -1,42 +1,63 @@
 {%- liquid
   assign s = section.settings
+  assign key = s.handle | strip | downcase
   assign p = s.product
-  assign tint = p.metafields.velreya.atmosphere.value | default: s.tint
-  assign tint2 = p.metafields.velreya.atmosphere_secondary.value | default: settings.color_black
+  if p
+    assign key = p.handle
+  endif
+  assign lines = settings.fragrance_catalog | newline_to_br | replace: '<br>', '<br />' | split: '<br />'
+  assign f = nil
+  assign pos = 0
+  for line in lines
+    assign parts = line | strip | split: '|'
+    if parts.size > 8
+      assign pos = pos | plus: 1
+      assign h = parts[0] | strip | downcase
+      if h == key
+        assign f = parts
+        break
+      endif
+    endif
+  endfor
+  if p == blank and f
+    assign cat_col = settings.discovery_collection | default: collections.all
+    for cp in cat_col.products
+      if cp.handle == key
+        assign p = cp
+        break
+      endif
+    endfor
+  endif
+  assign accent = f[4] | strip | default: settings.color_gold
+  assign atmos = f[5] | strip | default: '#33280c'
+  assign name = f[1] | strip | default: p.title
 -%}
-<section class="spotlight" style="--tint: {{ tint }}; --tint-2: {{ tint2 }};" aria-labelledby="Spotlight-{{ section.id }}">
-  <div class="spotlight__atmos" aria-hidden="true"></div>
-  <div class="container container--wide spotlight__grid">
-    <div class="spotlight__visual" data-reveal>
-      {%- if s.image != blank -%}
-        {% render 'image', image: s.image, sizes: '(min-width: 990px) 50vw, 100vw', class: 'spotlight__img' %}
-      {%- elsif p.featured_media -%}
-        {% render 'image', image: p.featured_media.preview_image, sizes: '(min-width: 990px) 50vw, 100vw', class: 'spotlight__img', alt: p.title %}
-      {%- else -%}
-        {% render 'bottle-placeholder', tint: tint %}
-      {%- endif -%}
+<section class="spot" style="--accent: {{ accent }}; --atmos: {{ atmos }};" aria-labelledby="Spot-{{ section.id }}" data-scroll>
+  <div class="spot__atmos" aria-hidden="true"></div>
+  <div class="container container--wide spot__grid">
+    <div class="spot__copy">
+      <p class="eyebrow" data-reveal>{{ s.eyebrow }}{% if f %} — {{ pos | prepend: '0' | slice: -2, 2 }}{% endif %}</p>
+      <h2 class="spot__name" id="Spot-{{ section.id }}">{{ name }}</h2>
+      {%- if f -%}<p class="spot__tagline" data-reveal>{{ f[2] | strip }}</p>{%- endif -%}
+      <div class="spot__text" data-reveal>
+        {%- if s.text != blank -%}
+          {{ s.text }}
+        {%- elsif f -%}
+          <p>{{ f[3] | strip | capitalize }}. {{ f[6] | strip }} open onto {{ f[7] | strip }}, settling into {{ f[8] | strip }}.</p>
+        {%- endif -%}
+      </div>
+      <div class="spot__ctas" data-reveal>
+        <a class="btn btn--line" href="{{ p.url | default: routes.all_products_collection_url }}">{{ 'products.discover' | t: name: name }}</a>
+        {%- if p -%}<span class="spot__price">{% render 'price', product: p, show_from: true %}</span>{%- endif -%}
+        {%- if s.explore_link != blank -%}<a class="lnk" href="{{ s.explore_link }}#{{ key }}">{{ 'products.explore_fragrance' | t }}</a>{%- endif -%}
+      </div>
     </div>
-    <div class="spotlight__copy" data-reveal>
-      <p class="eyebrow">{{ s.eyebrow }}</p>
-      {%- if p != blank -%}
-        <h2 class="spotlight__title display" id="Spotlight-{{ section.id }}">{{ p.title }}</h2>
-        {%- assign character = p.metafields.velreya.character.value -%}
-        {%- if character != blank -%}<p class="spotlight__character">{{ character }}</p>{%- endif -%}
-        {%- if s.text != blank -%}<div class="spotlight__text rte">{{ s.text }}</div>{%- elsif p.metafields.velreya.story != blank -%}<p class="spotlight__text">{{ p.metafields.velreya.story.value | truncatewords: 40 }}</p>{%- endif -%}
-        {% render 'fragrance-notes', product: p, style: 'columns' %}
-        <div class="spotlight__buy">
-          {% render 'price', product: p, show_from: true %}
-          <div class="spotlight__ctas">
-            <a class="btn btn--ivory" href="{{ p.url }}">{{ 'products.shop_now' | t }}</a>
-            {%- if s.explore_link != blank -%}
-              <a class="btn btn--ghost" href="{{ s.explore_link }}#{{ p.handle }}">{{ 'products.explore_fragrance' | t }}</a>
-            {%- endif -%}
-          </div>
-        </div>
-      {%- else -%}
-        <h2 class="spotlight__title display" id="Spotlight-{{ section.id }}">{{ 'onboarding.product_title' | t }}</h2>
-        <p class="editor-hint">{{ 'onboarding.choose_product' | t }}</p>
-      {%- endif -%}
+    <div class="spot__visual">
+      <span class="spot__ring" aria-hidden="true"></span>
+      <span class="spot__float" data-parallax="-0.1">
+        {%- assign spot_img = s.image | default: p.featured_image -%}
+        {% render 'bottle-image', image: spot_img, sizes: '(min-width: 990px) 32vw, 80vw', class: 'spot__img', alt: name %}
+      </span>
     </div>
   </div>
 </section>
@@ -44,11 +65,11 @@
 {
   "name": "Featured fragrance",
   "settings": [
-    { "type": "product", "id": "product", "label": "Fragrance" },
-    { "type": "image_picker", "id": "image", "label": "Campaign image", "info": "Defaults to the product's featured image." },
-    { "type": "color", "id": "tint", "label": "Atmosphere color fallback", "default": "#5A3B2A", "info": "Overridden by the product metafield velreya.atmosphere." },
-    { "type": "text", "id": "eyebrow", "label": "Label", "default": "In the spotlight" },
-    { "type": "richtext", "id": "text", "label": "Text", "info": "Defaults to the product metafield velreya.story." },
+    { "type": "text", "id": "handle", "label": "Fragrance (catalog handle)", "default": "velour" },
+    { "type": "product", "id": "product", "label": "Or choose a product", "info": "Overrides the handle above." },
+    { "type": "image_picker", "id": "image", "label": "Campaign image", "info": "Defaults to the product image, then the VELREYA bottle." },
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "One iconic fragrance" },
+    { "type": "richtext", "id": "text", "label": "Text", "info": "Defaults to a description built from the catalog notes." },
     { "type": "url", "id": "explore_link", "label": "Explore page link", "info": "For example /pages/explore" }
   ],
   "presets": [ { "name": "Featured fragrance" } ]

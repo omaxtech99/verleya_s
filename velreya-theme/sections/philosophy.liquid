@@ -1,0 +1,23 @@
+{%- assign s = section.settings -%}
+<section class="philo" data-scroll>
+  <div class="philo__line" aria-hidden="true"></div>
+  <div class="container container--wide">
+    <p class="eyebrow" data-reveal>{{ s.eyebrow }}</p>
+    <h2 class="display display--break philo__title" data-reveal>{{ s.title }}</h2>
+    {%- if s.text != blank -%}<div class="philo__text" data-reveal>{{ s.text }}</div>{%- endif -%}
+    {%- if s.cta != blank and s.link != blank -%}<a class="lnk" href="{{ s.link }}" data-reveal>{{ s.cta }}</a>{%- endif -%}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Philosophy",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "The VELREYA Philosophy" },
+    { "type": "inline_richtext", "id": "title", "label": "Heading", "default": "More than a fragrance. <em>A presence.</em>" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Memory, confidence and personal expression, carried quietly.</p>" },
+    { "type": "text", "id": "cta", "label": "Link label", "default": "Our story" },
+    { "type": "url", "id": "link", "label": "Link" }
+  ],
+  "presets": [ { "name": "Philosophy" } ]
+}
+{% endschema %}
